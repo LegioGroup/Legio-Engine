@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 #Add external Libs
 add_subdirectory(external/glm)
 add_subdirectory(external/glfw)
+add_subdirectory(external/spdlog)
 
 #Not very effient way to add files if the project gets too big
 file(GLOB SOURCES "src/*.cpp" "src/*/*.cpp" "src/*/*/*.cpp")
@@ -18,6 +19,7 @@ target_include_directories(${PROJECT_NAME}
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         glm
+        spdlog/include
     PRIVATE
         glfw
 )
@@ -25,6 +27,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
         glm
+        spdlog
     PRIVATE
         glfw
 )
