@@ -29,19 +29,20 @@ namespace LG
                 m_running = false;
                 continue;
             }
+
+            Update(0.0f);
         }
     }
-    
+
     void Application::InitServices()
     {
-        ServiceLocator::Provide(new Log());        
-        ServiceLocator::Provide(new EngineWindow());     
+        ServiceLocator::Provide(new Log());
+        ServiceLocator::Provide(new EngineWindow());
 
         ServiceLocator::GetLogger()->Init();
         LG_CORE_INFO("Services Initiated!");
-
     }
-    
+
     void Application::ShutdownServices()
     {
         LG_CORE_INFO("Shutdown Services!");

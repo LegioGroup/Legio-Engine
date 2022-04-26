@@ -14,6 +14,9 @@ namespace LG
         void ShutdownServices();
 
     protected:
+        virtual void Update(float deltaTime){};
+
+    protected:
         std::string m_appName;
         bool m_running = true;
     };
