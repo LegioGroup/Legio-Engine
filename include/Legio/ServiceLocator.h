@@ -25,6 +25,12 @@ namespace LG
         LG_PROVIDE_FN(Window, window, m_window);
         LG_PROVIDE_FN(Log, log, m_log);
 
+        static inline void ShutdownServices()
+        {
+            m_window.reset();
+            m_log.reset();
+        }
+
     private:
         static inline std::unique_ptr<Window> m_window = nullptr;
         static inline std::unique_ptr<Log> m_log = nullptr;

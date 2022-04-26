@@ -3,10 +3,11 @@
 #include <GLFW/glfw3.h>
 namespace LG
 {
-    class CustomWindow : public Window
+    class EngineWindow : public Window
     {
     public:
-        CustomWindow() = default;
+        EngineWindow() = default;
+        ~EngineWindow();
         virtual void OpenWindow() override;
         virtual bool Update() override;
     private:

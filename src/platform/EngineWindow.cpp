@@ -1,8 +1,14 @@
-#include "GLFWwindow.h"
+#include "EngineWindow.h"
 #include <Legio/platform/Log.h>
 namespace LG
 {
-    void CustomWindow::OpenWindow()
+    EngineWindow::~EngineWindow()
+    {
+        LG_CORE_INFO("Shutting Down Engine Window");
+        glfwDestroyWindow(m_window);
+    }
+
+    void EngineWindow::OpenWindow()
     {
         if(!glfwInit())
         {
@@ -11,7 +17,7 @@ namespace LG
         m_window = glfwCreateWindow(800, 600, "Legio Engine", nullptr, nullptr);
     }
 
-    bool CustomWindow::Update()
+    bool EngineWindow::Update()
     {
         glfwPollEvents();
 

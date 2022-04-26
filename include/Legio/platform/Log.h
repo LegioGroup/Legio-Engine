@@ -7,6 +7,7 @@ namespace LG
     class Log
     {
     public:
+        ~Log();
         void Init();
         
         inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_coreLogger; };
