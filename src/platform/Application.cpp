@@ -39,6 +39,8 @@ namespace LG
             //Draw Frame
             LG::ServiceLocator::GetRenderer()->RenderFrame();
         }
+
+        LG::ServiceLocator::GetRenderer()->RendererWaitIdle();
     }
 
     void Application::InitServices()

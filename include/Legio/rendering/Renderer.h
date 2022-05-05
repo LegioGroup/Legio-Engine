@@ -15,5 +15,6 @@ namespace LG
         virtual void Init(RendererSettings settings) = 0;
         virtual void Shutdown() = 0;
         virtual void RenderFrame() = 0;
+        virtual void RendererWaitIdle(){};
     };
 }

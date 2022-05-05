@@ -17,6 +17,7 @@ namespace LG
         virtual void Init(RendererSettings settings) override;
         virtual void Shutdown() override;
         virtual void RenderFrame()  override;
+        virtual void RendererWaitIdle() override;
     private:
         void CreatePipelineLayout();
         void CreatePipeline();

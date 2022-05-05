@@ -33,6 +33,7 @@ namespace LG {
 
         VKPipeline(const VKPipeline&) = delete;
         VKPipeline& operator=(const VKPipeline&) = delete;
+        void Bind(VkCommandBuffer commandBuffer);
 
         static PipelineConfigInfo DefaultPipelineConfigInfo(uint32_t width, uint32_t height);
     private:

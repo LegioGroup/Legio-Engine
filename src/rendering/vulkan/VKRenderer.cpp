@@ -1,7 +1,9 @@
+#include <array>
 #include <Legio/ServiceLocator.h>
 #include <Legio/platform/Log.h>
 
 #include "rendering/vulkan/VKRenderer.h"
+
 namespace LG
 {
     VKRenderer::~VKRenderer()
@@ -29,7 +31,24 @@ namespace LG
 
     void VKRenderer::RenderFrame()
     {
+        uint32_t imageIndex;
+        auto result = m_swapChain->AcquireNextImage(&imageIndex); //index of the frame we should render to Next
 
+        if (result != VK_SUCCESS || result == VK_SUBOPTIMAL_KHR) 
+        {
+            throw std::runtime_error("Failed to acquire swap chain image!");
+        }
+
+        result = m_swapChain->SubmitCommandBuffers(&m_commandBuffers[imageIndex], &imageIndex);
+        if (result != VK_SUCCESS) 
+        {
+            throw std::runtime_error("Failed to Submit command Buffers!");
+        }
+    }
+
+    void VKRenderer::RendererWaitIdle()
+    {
+        vkDeviceWaitIdle(m_device->GetDevice()); //block CPU until all GPU operations complete.
     }
 
     void VKRenderer::CreatePipelineLayout()
@@ -63,7 +82,56 @@ namespace LG
 
     void VKRenderer::CreateCommandBuffers()
     {
+        m_commandBuffers.resize(m_swapChain->ImageCount());
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = m_device->GetCommandPool();
+        allocInfo.commandBufferCount = static_cast<uint32_t>(m_commandBuffers.size());
 
+        if (vkAllocateCommandBuffers(m_device->GetDevice(), &allocInfo, m_commandBuffers.data()) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to allocate Command Buffers!");
+        }
+
+        for (int i = 0; i < m_commandBuffers.size(); ++i)
+        {
+            VkCommandBufferBeginInfo beginInfo{};
+            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+            if (vkBeginCommandBuffer(m_commandBuffers[i], &beginInfo) != VK_SUCCESS) 
+            {
+                throw std::runtime_error("Failed to begin recording Command Buffer!");
+            }
+
+            //Configure render Pass.
+            VkRenderPassBeginInfo renderPassInfo{};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderPassInfo.renderPass = m_swapChain->GetRenderPass();
+            renderPassInfo.framebuffer = m_swapChain->GetFrameBuffer(i);
+
+            renderPassInfo.renderArea.offset = { 0,0 };
+            renderPassInfo.renderArea.extent = m_swapChain->GetSwapChainExtent();
+
+            std::array<VkClearValue, 2> clearValues{};
+            clearValues[0].color = { 0.1f, 0.1f, 0.1f, 0.1f };
+            clearValues[1].depthStencil = { 1.0f, 0 };
+
+            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+            renderPassInfo.pClearValues = clearValues.data();
+
+            //Biging RenderPAss
+            vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+            m_pipeline->Bind(m_commandBuffers[i]);
+            vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);
+
+            vkCmdEndRenderPass(m_commandBuffers[i]);
+            if (vkEndCommandBuffer(m_commandBuffers[i]) != VK_SUCCESS) 
+            {
+                throw std::runtime_error("Failed to end recording Command Buffer!");
+            }
+        }
     }
 
 } // namespace LG
