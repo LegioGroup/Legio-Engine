@@ -6,15 +6,19 @@ namespace LG
     {
         LG_CORE_INFO("Shutting Down Engine Window");
         glfwDestroyWindow(m_window);
+        glfwTerminate();
     }
 
-    void EngineWindow::OpenWindow()
+    void EngineWindow::OpenWindow(WindowSettings data)
     {
         if(!glfwInit())
         {
             LG_CORE_CRITICAL("Couldn't initialize GLFW!");
         }
-        m_window = glfwCreateWindow(800, 600, "Legio Engine", nullptr, nullptr);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+        m_window = glfwCreateWindow(data.m_width, data.m_height, data.m_name, nullptr, nullptr);
     }
 
     bool EngineWindow::Update()

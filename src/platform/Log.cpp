@@ -21,6 +21,7 @@ namespace LG
         s_clientLogger = spdlog::stdout_color_mt("APP");
         s_clientLogger->set_level(spdlog::level::trace);
 
+        LG_CORE_INFO("Logger Initialized!");
     }
 
 } //namespace LG

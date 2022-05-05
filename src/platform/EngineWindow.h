@@ -8,7 +8,7 @@ namespace LG
     public:
         EngineWindow() = default;
         ~EngineWindow();
-        virtual void OpenWindow() override;
+        virtual void OpenWindow(WindowSettings data = WindowSettings()) override;
         virtual bool Update() override;
     private:
         GLFWwindow* m_window = nullptr;

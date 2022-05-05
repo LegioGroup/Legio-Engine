@@ -2,7 +2,9 @@
 #include <Legio/ServiceLocator.h>
 #include <Legio/platform/Log.h>
 #include <Legio/platform/Window.h>
+
 #include "EngineWindow.h"
+#include "rendering/vulkan/VKRenderer.h"
 
 namespace LG
 {
@@ -20,7 +22,7 @@ namespace LG
     
     void Application::Run()
     {
-        ServiceLocator::GetWindow()->OpenWindow();
+        ServiceLocator::GetWindow()->OpenWindow({800, 600, m_appName.c_str()});
 
         while (m_running)
         {
@@ -29,12 +31,15 @@ namespace LG
                 m_running = false;
                 continue;
             }
-            
+
             m_clock.InitUpdatesToProcess();
             while(m_clock.ProcessUpdates())
             {
                 Update(m_clock.GetFixedTick());
             }
+
+            //Draw Frame
+            LG::ServiceLocator::GetRenderer()->RenderFrame();
         }
     }
 
@@ -42,8 +47,11 @@ namespace LG
     {
         ServiceLocator::Provide(new Log());
         ServiceLocator::Provide(new EngineWindow());
+        ServiceLocator::Provide(new VKRenderer());
 
         ServiceLocator::GetLogger()->Init();
+        ServiceLocator::GetRenderer()->Init(RendererSettings());
+
         LG_CORE_INFO("Services Initiated!");
     }
 

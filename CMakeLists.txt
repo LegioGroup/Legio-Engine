@@ -21,6 +21,7 @@ target_include_directories(${PROJECT_NAME}
         glm
         spdlog/include
     PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
         glfw
 )
 
