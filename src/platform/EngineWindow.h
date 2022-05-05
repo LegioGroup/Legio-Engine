@@ -13,6 +13,7 @@ namespace LG
         virtual void OpenWindow(WindowSettings data = WindowSettings()) override;
         virtual bool Update() override;
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+        VkExtent2D GetExtent();
     private:
         GLFWwindow* m_window = nullptr;
     };

@@ -43,4 +43,9 @@ namespace LG
              throw std::runtime_error("Failed to create Window Surface");
          }
      }
+
+    VkExtent2D EngineWindow::GetExtent()
+    {
+        return {static_cast<uint32_t>(m_windowSettings.m_width), static_cast<uint32_t>(m_windowSettings.m_height)};
+    }
 } //namespace LG

@@ -42,7 +42,7 @@ namespace LG
 
         VkCommandPool GetCommandPool() { return m_commandPool; }
         VkDevice GetDevice() { return m_device; }
-        VkSurfaceKHR getSurface() { return m_surface; }
+        VkSurfaceKHR GetSurface() { return m_surface; }
         VkQueue GetGraphicsQueue() { return m_graphicsQueue; }
         VkQueue GetPresentQueue() { return m_presentQueue; }
 
