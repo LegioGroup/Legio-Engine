@@ -18,8 +18,12 @@ namespace LG
     class Window
     {
     public:
+        Window(WindowSettings windowSettings = WindowSettings()) : m_windowSettings(windowSettings) {};
         virtual ~Window() = default;
         virtual void OpenWindow(WindowSettings data = WindowSettings()) = 0;
         virtual bool Update() = 0;
+        inline WindowSettings GetWindowSettings() const { return m_windowSettings; };
+    protected:
+        WindowSettings m_windowSettings;
     };
 } //namespace LG

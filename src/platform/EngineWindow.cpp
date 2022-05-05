@@ -2,6 +2,13 @@
 #include <Legio/platform/Log.h>
 namespace LG
 {
+
+    EngineWindow::EngineWindow(WindowSettings windowSettings)
+        : Window(windowSettings)
+    {
+
+    }
+
     EngineWindow::~EngineWindow()
     {
         LG_CORE_INFO("Shutting Down Engine Window");
@@ -27,4 +34,13 @@ namespace LG
 
         return glfwWindowShouldClose(m_window);
     }
+
+     void EngineWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+     {
+         if(glfwCreateWindowSurface(instance, m_window, nullptr, surface) != VK_SUCCESS)
+         {
+             LG_CORE_CRITICAL("Failed to create Window Surface");
+             throw std::runtime_error("Failed to create Window Surface");
+         }
+     }
 } //namespace LG

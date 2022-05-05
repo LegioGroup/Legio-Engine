@@ -22,8 +22,6 @@ namespace LG
     
     void Application::Run()
     {
-        ServiceLocator::GetWindow()->OpenWindow({800, 600, m_appName.c_str()});
-
         while (m_running)
         {
             if(LG::ServiceLocator::GetWindow()->Update())
@@ -50,6 +48,7 @@ namespace LG
         ServiceLocator::Provide(new VKRenderer());
 
         ServiceLocator::GetLogger()->Init();
+        ServiceLocator::GetWindow()->OpenWindow({800, 600, m_appName.c_str()});
         ServiceLocator::GetRenderer()->Init(RendererSettings());
 
         LG_CORE_INFO("Services Initiated!");
