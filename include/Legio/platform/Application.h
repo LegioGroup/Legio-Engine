@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <Legio/platform/Clock.h>
 namespace LG
 {
     class Application
@@ -19,6 +20,7 @@ namespace LG
     protected:
         std::string m_appName;
         bool m_running = true;
+        Clock m_clock {1.0f / 60.0f};
     };
 
 } //namespace LG

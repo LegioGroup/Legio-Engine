@@ -29,8 +29,12 @@ namespace LG
                 m_running = false;
                 continue;
             }
-
-            Update(0.0f);
+            
+            m_clock.InitUpdatesToProcess();
+            while(m_clock.ProcessUpdates())
+            {
+                Update(m_clock.GetFixedTick());
+            }
         }
     }
 
