@@ -503,7 +503,10 @@ namespace LG {
             throw std::runtime_error("failed to allocate vertex buffer memory!");
         }
 
-        vkBindBufferMemory(m_device, buffer, bufferMemory, 0);
+        if(vkBindBufferMemory(m_device, buffer, bufferMemory, 0) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to bind vertex buffer memory!");
+        }
     }
 
     VkCommandBuffer VKDevice::BeginSingleTimeCommands()

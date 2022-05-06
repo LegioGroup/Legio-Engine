@@ -18,6 +18,7 @@ namespace LG
         m_device = std::make_unique<VKDevice>(*m_engineWindow);
         m_swapChain = std::make_unique<VKSwapChain>(*m_device, m_engineWindow->GetExtent());
 
+        LoadModels();
         CreatePipelineLayout();
         CreatePipeline();
         CreateCommandBuffers();
@@ -44,6 +45,18 @@ namespace LG
         {
             throw std::runtime_error("Failed to Submit command Buffers!");
         }
+    }
+
+    void VKRenderer::LoadModels()
+    {
+        std::vector<VKModel::Vertex> vertices
+        {
+            {{0.0f, -0.5f}},
+            {{0.5f, 0.5f}},
+            {{-0.5f, 0.5f}},
+        };
+
+        m_model = std::make_unique<VKModel>(*m_device, vertices);
     }
 
     void VKRenderer::RendererWaitIdle()
@@ -124,7 +137,8 @@ namespace LG
             vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             m_pipeline->Bind(m_commandBuffers[i]);
-            vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);
+            m_model->Bind(m_commandBuffers[i]);
+            m_model->Draw(m_commandBuffers[i]);
 
             vkCmdEndRenderPass(m_commandBuffers[i]);
             if (vkEndCommandBuffer(m_commandBuffers[i]) != VK_SUCCESS) 
