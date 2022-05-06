@@ -87,14 +87,6 @@ namespace LG
         vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
-        VkPipelineViewportStateCreateInfo viewportInfo{};
-        //Combine Viewport and Scissors
-        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportInfo.viewportCount = 1;
-        viewportInfo.pViewports = &info.viewport;
-        viewportInfo.scissorCount = 1;
-        viewportInfo.pScissors = &info.scissors;
-
         VkPipelineColorBlendStateCreateInfo colorBlendInfo{};
         colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
         colorBlendInfo.logicOpEnable = VK_FALSE;
@@ -112,12 +104,12 @@ namespace LG
         pipelineInfo.pStages = shaderStages;
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &info.inputAssemblyInfo;
-        pipelineInfo.pViewportState = &viewportInfo;
+        pipelineInfo.pViewportState = &info.viewportInfo;
         pipelineInfo.pRasterizationState = &info.rasterizationInfo;
         pipelineInfo.pMultisampleState = &info.multisampleInfo;
         pipelineInfo.pColorBlendState = &colorBlendInfo;
         pipelineInfo.pDepthStencilState = &info.depthStencilInfo;
-        pipelineInfo.pDynamicState = nullptr;
+        pipelineInfo.pDynamicState = &info.dynamicStateInfo;
 
         pipelineInfo.layout = info.pipelineLayout;
         pipelineInfo.renderPass = info.renderPass;
@@ -144,24 +136,19 @@ namespace LG
         }
     }
 
-    PipelineConfigInfo VKPipeline::DefaultPipelineConfigInfo(uint32_t width, uint32_t height)
+    void VKPipeline::DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
     {
-        PipelineConfigInfo configInfo{};
         //1 - Input Assembly
         configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
 
-        configInfo.viewport.x = 0.0f;
-        configInfo.viewport.y = 0.0f;
-        configInfo.viewport.width = static_cast<float>(width);
-        configInfo.viewport.height = static_cast<float>(height);
-
-        //Range for the viewport
-        configInfo.viewport.minDepth = 0.0f;
-        configInfo.viewport.maxDepth = 1.0f;
-        configInfo.scissors.offset = { 0,0 };
-        configInfo.scissors.extent = { width,height };
+        //Combine Viewport and Scissors
+        configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        configInfo.viewportInfo.viewportCount = 1;
+        configInfo.viewportInfo.pViewports = nullptr;
+        configInfo.viewportInfo.scissorCount = 1;
+        configInfo.viewportInfo.pScissors = nullptr;
 
         //2 - Rasterization
         configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -209,7 +196,11 @@ namespace LG
         configInfo.depthStencilInfo.front = {}; 
         configInfo.depthStencilInfo.back = {};
 
-        return configInfo;
+        configInfo.dyamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+        configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        configInfo.dynamicStateInfo.pDynamicStates = configInfo.dyamicStateEnables.data();
+        configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dyamicStateEnables.size());
+        configInfo.dynamicStateInfo.flags = 0;
     }
 
     void VKPipeline::Bind(VkCommandBuffer commandBuffer)

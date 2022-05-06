@@ -8,13 +8,20 @@ namespace LG {
 
     struct PipelineConfigInfo 
     {
-        VkViewport viewport; //Transformation between pipeline's output and target image
-        VkRect2D scissors; //Pixels outside this rectangle will be discarded
+        PipelineConfigInfo() = default;
+        PipelineConfigInfo(const PipelineConfigInfo&) = delete;
+        PipelineConfigInfo& operator=(const PipelineConfigInfo&) = delete;
+
+        VkPipelineViewportStateCreateInfo viewportInfo;
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo rasterizationInfo;
         VkPipelineMultisampleStateCreateInfo multisampleInfo;
         VkPipelineColorBlendAttachmentState colorBlendAttachment;
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+
+        std::vector<VkDynamicState> dyamicStateEnables;
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+
         VkPipelineLayout pipelineLayout = nullptr;
         VkRenderPass renderPass = nullptr;
         uint32_t subpass = 0;
@@ -35,7 +42,7 @@ namespace LG {
         VKPipeline& operator=(const VKPipeline&) = delete;
         void Bind(VkCommandBuffer commandBuffer);
 
-        static PipelineConfigInfo DefaultPipelineConfigInfo(uint32_t width, uint32_t height);
+        static void DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
     private:
         static std::vector<char> ReadFile(const std::string& filePath);
 
