@@ -12,7 +12,25 @@
 namespace LG {
 
     VKSwapChain::VKSwapChain(VKDevice& deviceRef, VkExtent2D extent)
-        : m_device{ deviceRef }, m_windowExtent{ extent } {
+        : m_device{ deviceRef }
+        , m_windowExtent{ extent }
+    {
+        Init();
+    }
+
+    VKSwapChain::VKSwapChain(VKDevice& deviceRef, VkExtent2D extent, std::shared_ptr<VKSwapChain> previous)
+        : m_device{ deviceRef }
+        , m_windowExtent{ extent }
+        , m_oldSwapChain{ previous }
+    {
+        Init();
+
+        // cleanup old swapChain
+        m_oldSwapChain = nullptr;
+    }
+
+    void VKSwapChain::Init()
+    {
         CreateSwapChain();
         CreateImageViews();
         createRenderPass();
@@ -163,7 +181,7 @@ namespace LG {
         createInfo.presentMode = presentMode;
         createInfo.clipped = VK_TRUE;
 
-        createInfo.oldSwapchain = VK_NULL_HANDLE;
+        createInfo.oldSwapchain = m_oldSwapChain == nullptr ? VK_NULL_HANDLE : m_oldSwapChain->m_swapChain;
 
         if (vkCreateSwapchainKHR(m_device.GetDevice(), &createInfo, nullptr, &m_swapChain) != VK_SUCCESS) {
             throw std::runtime_error("failed to create swap chain!");

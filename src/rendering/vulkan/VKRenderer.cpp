@@ -96,6 +96,9 @@ namespace LG
 
     void VKRenderer::CreatePipeline()
     {
+        assert(m_swapChain != nullptr && "Cannot create pipeline before swapChain!");
+        assert(m_pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout!");
+
         PipelineConfigInfo pipelineConfig = {};
         VKPipeline::DefaultPipelineConfigInfo(pipelineConfig);
 
@@ -124,6 +127,13 @@ namespace LG
         }
     }
 
+    
+    void VKRenderer::FreeCommandBuffers()
+    {
+        vkFreeCommandBuffers(m_device->GetDevice(), m_device->GetCommandPool(),static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+        m_commandBuffers.clear();
+    }
+
     void VKRenderer::RecreateSwapChain()
     {
         auto extent = m_engineWindow->GetExtent();
@@ -135,7 +145,21 @@ namespace LG
 
         vkDeviceWaitIdle(m_device->GetDevice());
         m_swapChain.reset();
-        m_swapChain = std::make_unique<VKSwapChain>(*m_device, extent);
+
+        if(m_swapChain == nullptr)
+        {
+            m_swapChain = std::make_unique<VKSwapChain>(*m_device, extent);
+        }
+        else
+        {
+            m_swapChain = std::make_unique<VKSwapChain>(*m_device, extent, std::move(m_swapChain));
+            if(m_swapChain->ImageCount() != m_commandBuffers.size())
+            {
+                FreeCommandBuffers();
+                CreateCommandBuffers();
+            }
+        }
+
         CreatePipeline();
     }
 

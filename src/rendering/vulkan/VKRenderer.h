@@ -24,6 +24,7 @@ namespace LG
         void CreatePipelineLayout();
         void CreatePipeline();
         void CreateCommandBuffers();
+        void FreeCommandBuffers();
         void LoadModels();
 
         void RecreateSwapChain();

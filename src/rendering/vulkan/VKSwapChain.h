@@ -8,6 +8,7 @@
 // std lib headers
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace LG {
 
@@ -16,6 +17,8 @@ namespace LG {
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
         VKSwapChain(VKDevice& deviceRef, VkExtent2D windowExtent);
+        VKSwapChain(VKDevice& deviceRef, VkExtent2D windowExtent, std::shared_ptr<VKSwapChain> previous);
+
         ~VKSwapChain();
 
         VKSwapChain(const VKSwapChain&) = delete;
@@ -39,6 +42,7 @@ namespace LG {
         VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
     private:
+        void Init(); 
         void CreateSwapChain();
         void CreateImageViews();
         void CreateDepthResources();
@@ -69,6 +73,7 @@ namespace LG {
         VkExtent2D m_windowExtent;
 
         VkSwapchainKHR m_swapChain;
+        std::shared_ptr<VKSwapChain> m_oldSwapChain;
 
         std::vector<VkSemaphore> m_imageAvailableSemaphores;
         std::vector<VkSemaphore> m_renderFinishedSemaphores;
