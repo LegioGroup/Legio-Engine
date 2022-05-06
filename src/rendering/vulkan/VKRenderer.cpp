@@ -20,7 +20,7 @@ namespace LG
 
         LoadModels();
         CreatePipelineLayout();
-        CreatePipeline();
+        RecreateSwapChain();
         CreateCommandBuffers();
 
         LG_CORE_INFO("Initialize Vulkan Renderer!"); 
@@ -35,12 +35,27 @@ namespace LG
         uint32_t imageIndex;
         auto result = m_swapChain->AcquireNextImage(&imageIndex); //index of the frame we should render to Next
 
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) 
+        {
+            RecreateSwapChain();
+            return;
+        }
+
         if (result != VK_SUCCESS || result == VK_SUBOPTIMAL_KHR) 
         {
             throw std::runtime_error("Failed to acquire swap chain image!");
         }
 
+        RecordCommandBuffer(imageIndex);
         result = m_swapChain->SubmitCommandBuffers(&m_commandBuffers[imageIndex], &imageIndex);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_engineWindow->WasWindowResized())
+        {
+            m_engineWindow->ResetWindowResizedFlag();
+            RecreateSwapChain();
+            return;
+        }
+
         if (result != VK_SUCCESS) 
         {
             throw std::runtime_error("Failed to Submit command Buffers!");
@@ -51,9 +66,9 @@ namespace LG
     {
         std::vector<VKModel::Vertex> vertices
         {
-            {{0.0f, -0.5f}},
-            {{0.5f, 0.5f}},
-            {{-0.5f, 0.5f}},
+            {{0.0f, -0.5f}, {1.0f,0.0f,0.0f}},
+            {{0.5f, 0.5f}, {0.0f,1.0f,0.0f}},
+            {{-0.5f, 0.5f}, {0.0f,0.0f,1.0f}}
         };
 
         m_model = std::make_unique<VKModel>(*m_device, vertices);
@@ -106,45 +121,60 @@ namespace LG
         {
             throw std::runtime_error("Failed to allocate Command Buffers!");
         }
+    }
 
-        for (int i = 0; i < m_commandBuffers.size(); ++i)
+    void VKRenderer::RecreateSwapChain()
+    {
+        auto extent = m_engineWindow->GetExtent();
+        while (extent.width == 0 || extent.height == 0) 
         {
-            VkCommandBufferBeginInfo beginInfo{};
-            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+            extent = m_engineWindow->GetExtent();
+            glfwWaitEvents();
+        }
 
-            if (vkBeginCommandBuffer(m_commandBuffers[i], &beginInfo) != VK_SUCCESS) 
-            {
-                throw std::runtime_error("Failed to begin recording Command Buffer!");
-            }
+        vkDeviceWaitIdle(m_device->GetDevice());
+        m_swapChain.reset();
+        m_swapChain = std::make_unique<VKSwapChain>(*m_device, extent);
+        CreatePipeline();
+    }
 
-            //Configure render Pass.
-            VkRenderPassBeginInfo renderPassInfo{};
-            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            renderPassInfo.renderPass = m_swapChain->GetRenderPass();
-            renderPassInfo.framebuffer = m_swapChain->GetFrameBuffer(i);
+    void VKRenderer::RecordCommandBuffer(int imageIndex)
+    {
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-            renderPassInfo.renderArea.offset = { 0,0 };
-            renderPassInfo.renderArea.extent = m_swapChain->GetSwapChainExtent();
+        if (vkBeginCommandBuffer(m_commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to begin recording Command Buffer!");
+        }
 
-            std::array<VkClearValue, 2> clearValues{};
-            clearValues[0].color = { 0.1f, 0.1f, 0.1f, 0.1f };
-            clearValues[1].depthStencil = { 1.0f, 0 };
+        //Configure render Pass.
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = m_swapChain->GetRenderPass();
+        renderPassInfo.framebuffer = m_swapChain->GetFrameBuffer(imageIndex);
 
-            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-            renderPassInfo.pClearValues = clearValues.data();
+        renderPassInfo.renderArea.offset = { 0,0 };
+        renderPassInfo.renderArea.extent = m_swapChain->GetSwapChainExtent();
 
-            //Biging RenderPAss
-            vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        std::array<VkClearValue, 2> clearValues{};
+        clearValues[0].color = { 0.1f, 0.1f, 0.1f, 0.1f };
+        clearValues[1].depthStencil = { 1.0f, 0 };
 
-            m_pipeline->Bind(m_commandBuffers[i]);
-            m_model->Bind(m_commandBuffers[i]);
-            m_model->Draw(m_commandBuffers[i]);
+        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        renderPassInfo.pClearValues = clearValues.data();
 
-            vkCmdEndRenderPass(m_commandBuffers[i]);
-            if (vkEndCommandBuffer(m_commandBuffers[i]) != VK_SUCCESS) 
-            {
-                throw std::runtime_error("Failed to end recording Command Buffer!");
-            }
+        //Biging RenderPAss
+        vkCmdBeginRenderPass(m_commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        m_pipeline->Bind(m_commandBuffers[imageIndex]); //Bind Graphics pipeline
+        m_model->Bind(m_commandBuffers[imageIndex]); //Bind model that contains vertex data
+        m_model->Draw(m_commandBuffers[imageIndex]); //Draw
+
+        vkCmdEndRenderPass(m_commandBuffers[imageIndex]);
+        if (vkEndCommandBuffer(m_commandBuffers[imageIndex]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to end recording Command Buffer!");
         }
     }
 

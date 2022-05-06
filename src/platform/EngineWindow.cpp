@@ -16,22 +16,32 @@ namespace LG
         glfwTerminate();
     }
 
+    void EngineWindow::FrameBufferResizedCB(GLFWwindow* window, int width, int height)
+    {
+        auto engineWindow = reinterpret_cast<EngineWindow*>(glfwGetWindowUserPointer(window));
+        engineWindow->m_frameBufferResized = true;
+        engineWindow->m_windowSettings.m_width = width;
+        engineWindow->m_windowSettings.m_height = height;
+    }
+
     void EngineWindow::OpenWindow(WindowSettings data)
     {
+        m_windowSettings = data;
         if(!glfwInit())
         {
             LG_CORE_CRITICAL("Couldn't initialize GLFW!");
         }
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         m_window = glfwCreateWindow(data.m_width, data.m_height, data.m_name, nullptr, nullptr);
+        glfwSetWindowUserPointer(m_window, this);
+        glfwSetFramebufferSizeCallback(m_window, FrameBufferResizedCB);
     }
 
     bool EngineWindow::Update()
     {
         glfwPollEvents();
-
         return glfwWindowShouldClose(m_window);
     }
 

@@ -12,9 +12,18 @@ namespace LG
         ~EngineWindow();
         virtual void OpenWindow(WindowSettings data = WindowSettings()) override;
         virtual bool Update() override;
+
+        inline bool WasWindowResized() const { return m_frameBufferResized; };
+        inline void ResetWindowResizedFlag() { m_frameBufferResized = false; };
+        //Vulkan Specific
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
         VkExtent2D GetExtent();
+
+    private:
+        static void FrameBufferResizedCB(GLFWwindow* window, int width, int height);
+
     private:
         GLFWwindow* m_window = nullptr;
+        bool m_frameBufferResized = false;
     };
 } //namespace LG

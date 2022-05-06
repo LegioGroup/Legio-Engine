@@ -25,6 +25,9 @@ namespace LG
         void CreatePipeline();
         void CreateCommandBuffers();
         void LoadModels();
+
+        void RecreateSwapChain();
+        void RecordCommandBuffer(int imageIndex);
     private:
         EngineWindow* m_engineWindow;
         std::unique_ptr<VKDevice> m_device;
