@@ -6,24 +6,22 @@
 #include <Legio/rendering/Renderer.h>
 
 
-#define LG_PROVIDE_FN(Class, sourcePtr, targetPtr)          \
-static inline void Provide(Class* sourcePtr)                \
-{                                                           \
-    if(targetPtr != nullptr)                                \
-    {                                                       \
-        return;                                             \
-    }                                                       \
-    targetPtr = std::unique_ptr<Class>(sourcePtr);          \
-}                                                           \
+#define LG_PROVIDE_FN(Class, sourcePtr, targetPtr)             \
+static inline void Provide(Class* sourcePtr)                   \
+{                                                              \
+    if(targetPtr != nullptr)                                   \
+    {                                                          \
+        return;                                                \
+    }                                                          \
+    targetPtr = std::unique_ptr<Class>(sourcePtr);             \
+}                                                              \
+static inline Class* Get##Class##() { return targetPtr.get(); }\
 
 namespace LG
 {
     class ServiceLocator
     {
     public:
-        static inline const std::unique_ptr<Window>& GetWindow() { return m_window; };
-        static inline const std::unique_ptr<Log>& GetLogger(){ return m_log; };
-        static inline const std::unique_ptr<Renderer>& GetRenderer(){ return m_renderer; };
 
         LG_PROVIDE_FN(Window, window, m_window);
         LG_PROVIDE_FN(Log, log, m_log);

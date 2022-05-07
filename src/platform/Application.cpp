@@ -49,7 +49,7 @@ namespace LG
         ServiceLocator::Provide(new EngineWindow({800, 600, m_appName.c_str()}));
         ServiceLocator::Provide(new VKRenderer());
 
-        ServiceLocator::GetLogger()->Init();
+        ServiceLocator::GetLog()->Init();
         ServiceLocator::GetWindow()->Init();
         ServiceLocator::GetRenderer()->Init(RendererSettings());
 

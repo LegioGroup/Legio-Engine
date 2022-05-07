@@ -16,7 +16,7 @@ namespace LG
     {
         LG_CORE_INFO("Initialize Vulkan Renderer!"); 
 
-        m_engineWindow = static_cast<EngineWindow*>(ServiceLocator::GetWindow().get());
+        m_engineWindow = static_cast<EngineWindow*>(ServiceLocator::GetWindow());
         m_device = std::make_unique<VKDevice>(*m_engineWindow);
         m_swapChain = std::make_unique<VKSwapChain>(*m_device, m_engineWindow->GetExtent());
 
