@@ -10,7 +10,7 @@ namespace LG
     public:
         EngineWindow(WindowSettings windowSettings = WindowSettings());
         ~EngineWindow();
-        virtual void OpenWindow(WindowSettings data = WindowSettings()) override;
+        virtual void Init() override;
         virtual bool Update() override;
 
         inline bool WasWindowResized() const { return m_frameBufferResized; };

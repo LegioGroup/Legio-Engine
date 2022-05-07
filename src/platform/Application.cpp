@@ -46,11 +46,11 @@ namespace LG
     void Application::InitServices()
     {
         ServiceLocator::Provide(new Log());
-        ServiceLocator::Provide(new EngineWindow());
+        ServiceLocator::Provide(new EngineWindow({800, 600, m_appName.c_str()}));
         ServiceLocator::Provide(new VKRenderer());
 
         ServiceLocator::GetLogger()->Init();
-        ServiceLocator::GetWindow()->OpenWindow({800, 600, m_appName.c_str()});
+        ServiceLocator::GetWindow()->Init();
         ServiceLocator::GetRenderer()->Init(RendererSettings());
 
         LG_CORE_INFO("Services Initiated!");

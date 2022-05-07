@@ -12,7 +12,7 @@ add_subdirectory(external/spdlog)
 find_package(Vulkan REQUIRED)
 
 #Not very effient way to add files if the project gets too big
-file(GLOB SOURCES "src/*.cpp" "src/*/*.cpp" "src/*/*/*.cpp")
+file(GLOB SOURCES "src/*.cpp" "src/*/*.cpp" "src/*/*/*.cpp" "src/*/*/*/*.cpp")
 
 add_library(${PROJECT_NAME} 
     ${SOURCES})

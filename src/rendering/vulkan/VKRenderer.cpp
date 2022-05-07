@@ -9,31 +9,34 @@ namespace LG
     VKRenderer::~VKRenderer()
     {
         LG_CORE_INFO("Shutting Down Vulkan Renderer!");
-        vkDestroyPipelineLayout(m_device->GetDevice(), m_pipelineLayout, nullptr);
+        FreeCommandBuffers();
     }
 
     void VKRenderer::Init(RendererSettings settings)
     {
+        LG_CORE_INFO("Initialize Vulkan Renderer!"); 
+
         m_engineWindow = static_cast<EngineWindow*>(ServiceLocator::GetWindow().get());
         m_device = std::make_unique<VKDevice>(*m_engineWindow);
         m_swapChain = std::make_unique<VKSwapChain>(*m_device, m_engineWindow->GetExtent());
 
-        LoadModels();
-        CreatePipelineLayout();
+        m_camera = VKCamera();
+        m_camera.SetPerspectiveProjection(glm::radians(50.f), GetAspectRatio(), 0.1f, 10.f);
+        m_camera.SetViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
+
+        m_simpleRenderSystem = std::make_unique<VKSimpleRenderSystem>(*m_device, m_swapChain->GetRenderPass(), m_camera);
+
         RecreateSwapChain();
         CreateCommandBuffers();
-
-        LG_CORE_INFO("Initialize Vulkan Renderer!"); 
     }
 
     void VKRenderer::Shutdown()
     {
     }
 
-    void VKRenderer::RenderFrame()
+    void VKRenderer::BeginFrame()
     {
-        uint32_t imageIndex;
-        auto result = m_swapChain->AcquireNextImage(&imageIndex); //index of the frame we should render to Next
+        auto result = m_swapChain->AcquireNextImage(&m_currentImageIndex); //index of the frame we should render to Next
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR) 
         {
@@ -46,8 +49,26 @@ namespace LG
             throw std::runtime_error("Failed to acquire swap chain image!");
         }
 
-        RecordCommandBuffer(imageIndex);
-        result = m_swapChain->SubmitCommandBuffers(&m_commandBuffers[imageIndex], &imageIndex);
+        m_isFrameStarted = true;
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+        if (vkBeginCommandBuffer(m_commandBuffers[m_currentImageIndex], &beginInfo) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to begin recording Command Buffer!");
+        }
+
+    }
+    void VKRenderer::EndFrame()
+    {
+        assert(m_isFrameStarted && "Can't call EndFrame while frame is not in progress");
+        if (vkEndCommandBuffer(m_commandBuffers[m_currentImageIndex]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to end recording Command Buffer!");
+        }
+
+        auto result = m_swapChain->SubmitCommandBuffers(&m_commandBuffers[m_currentImageIndex], &m_currentImageIndex);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_engineWindow->WasWindowResized())
         {
@@ -55,61 +76,69 @@ namespace LG
             RecreateSwapChain();
             return;
         }
-
-        if (result != VK_SUCCESS) 
+        else if (result != VK_SUCCESS) 
         {
             throw std::runtime_error("Failed to Submit command Buffers!");
         }
+
+        m_isFrameStarted = false;
     }
 
-    void VKRenderer::LoadModels()
+    void VKRenderer::BeginSwapChainRenderPass()
     {
-        std::vector<VKModel::Vertex> vertices
-        {
-            {{0.0f, -0.5f}, {1.0f,0.0f,0.0f}},
-            {{0.5f, 0.5f}, {0.0f,1.0f,0.0f}},
-            {{-0.5f, 0.5f}, {0.0f,0.0f,1.0f}}
-        };
+        assert(m_isFrameStarted && "Can't call BeginSwapChainRenderPass while frame is not in progress");
+        //Configure render Pass.
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = m_swapChain->GetRenderPass();
+        renderPassInfo.framebuffer = m_swapChain->GetFrameBuffer(m_currentImageIndex);
 
-        m_model = std::make_unique<VKModel>(*m_device, vertices);
+        renderPassInfo.renderArea.offset = { 0,0 };
+        renderPassInfo.renderArea.extent = m_swapChain->GetSwapChainExtent();
+
+        std::array<VkClearValue, 2> clearValues{};
+        clearValues[0].color = { 0.1f, 0.1f, 0.1f, 0.1f };
+        clearValues[1].depthStencil = { 1.0f, 0 };
+
+        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        renderPassInfo.pClearValues = clearValues.data();
+
+        //Biging RenderPAss
+        vkCmdBeginRenderPass(m_commandBuffers[m_currentImageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(m_swapChain->GetSwapChainExtent().width);
+        viewport.height = static_cast<float>(m_swapChain->GetSwapChainExtent().height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        VkRect2D scissor{ {0,0}, m_swapChain->GetSwapChainExtent() };
+        vkCmdSetViewport(m_commandBuffers[m_currentImageIndex], 0, 1, &viewport);
+        vkCmdSetScissor(m_commandBuffers[m_currentImageIndex], 0, 1, &scissor);
+    }
+
+    void VKRenderer::EndSwapChainRenderPass()
+    {
+        assert(m_isFrameStarted && "Can't call EndSwapChainRenderPass while frame is not in progress");
+        vkCmdEndRenderPass(m_commandBuffers[m_currentImageIndex]);
+    }
+
+    void VKRenderer::RenderFrame()
+    {
+        BeginFrame();
+        BeginSwapChainRenderPass();
+
+        m_simpleRenderSystem->RenderGameObjects(m_commandBuffers[m_currentImageIndex]);
+
+        EndSwapChainRenderPass();
+        EndFrame();
     }
 
     void VKRenderer::RendererWaitIdle()
     {
         vkDeviceWaitIdle(m_device->GetDevice()); //block CPU until all GPU operations complete.
-    }
-
-    void VKRenderer::CreatePipelineLayout()
-    {
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0;
-        pipelineLayoutInfo.pSetLayouts = nullptr;
-        pipelineLayoutInfo.pushConstantRangeCount = 0;
-        pipelineLayoutInfo.pPushConstantRanges = nullptr;
-
-        if (vkCreatePipelineLayout(m_device->GetDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to create Pipeline Layout");
-        }
-    }
-
-    void VKRenderer::CreatePipeline()
-    {
-        assert(m_swapChain != nullptr && "Cannot create pipeline before swapChain!");
-        assert(m_pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout!");
-
-        PipelineConfigInfo pipelineConfig = {};
-        VKPipeline::DefaultPipelineConfigInfo(pipelineConfig);
-
-        pipelineConfig.renderPass = m_swapChain->GetRenderPass();
-        pipelineConfig.pipelineLayout = m_pipelineLayout;
-        m_pipeline = std::make_unique<VKPipeline>(  
-            *m_device,
-            "../../external/engine/src/rendering/vulkan/shaders/basic_shader.vert.spv",
-            "../../external/engine/src/rendering/vulkan/shaders/basic_shader.frag.spv",
-            pipelineConfig
-        );
     }
 
     void VKRenderer::CreateCommandBuffers()
@@ -159,60 +188,5 @@ namespace LG
                 CreateCommandBuffers();
             }
         }
-
-        CreatePipeline();
     }
-
-    void VKRenderer::RecordCommandBuffer(int imageIndex)
-    {
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-        if (vkBeginCommandBuffer(m_commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to begin recording Command Buffer!");
-        }
-
-        //Configure render Pass.
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = m_swapChain->GetRenderPass();
-        renderPassInfo.framebuffer = m_swapChain->GetFrameBuffer(imageIndex);
-
-        renderPassInfo.renderArea.offset = { 0,0 };
-        renderPassInfo.renderArea.extent = m_swapChain->GetSwapChainExtent();
-
-        std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = { 0.1f, 0.1f, 0.1f, 0.1f };
-        clearValues[1].depthStencil = { 1.0f, 0 };
-
-        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-        renderPassInfo.pClearValues = clearValues.data();
-
-        //Biging RenderPAss
-        vkCmdBeginRenderPass(m_commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-        VkViewport viewport{};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = static_cast<float>(m_swapChain->GetSwapChainExtent().width);
-        viewport.height = static_cast<float>(m_swapChain->GetSwapChainExtent().height);
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-
-        VkRect2D scissor{ {0,0}, m_swapChain->GetSwapChainExtent() };
-        vkCmdSetViewport(m_commandBuffers[imageIndex], 0, 1, &viewport);
-        vkCmdSetScissor(m_commandBuffers[imageIndex], 0, 1, &scissor);
-
-        m_pipeline->Bind(m_commandBuffers[imageIndex]); //Bind Graphics pipeline
-        m_model->Bind(m_commandBuffers[imageIndex]); //Bind model that contains vertex data
-        m_model->Draw(m_commandBuffers[imageIndex]); //Draw
-
-        vkCmdEndRenderPass(m_commandBuffers[imageIndex]);
-        if (vkEndCommandBuffer(m_commandBuffers[imageIndex]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to end recording Command Buffer!");
-        }
-    }
-
 } // namespace LG

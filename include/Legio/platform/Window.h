@@ -20,9 +20,10 @@ namespace LG
     public:
         Window(WindowSettings windowSettings = WindowSettings()) : m_windowSettings(windowSettings) {};
         virtual ~Window() = default;
-        virtual void OpenWindow(WindowSettings data = WindowSettings()) = 0;
+        virtual void Init() = 0;
         virtual bool Update() = 0;
         inline WindowSettings GetWindowSettings() const { return m_windowSettings; };
+        inline void SetWindowSettings(const WindowSettings& newWindowSettings){ m_windowSettings = newWindowSettings; };
     protected:
         WindowSettings m_windowSettings;
     };

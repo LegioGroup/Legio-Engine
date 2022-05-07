@@ -1,10 +1,9 @@
 #pragma once
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Log.h>
-#include "rendering/vulkan/VKPipeline.h"
 #include "rendering/vulkan/VKSwapChain.h"
-#include "rendering/vulkan/VKModel.h"
-
+#include "rendering/vulkan/VKCamera.h"
+#include "rendering/vulkan/renderSystems/VKSimpleRenderSystem.h"
 namespace LG
 {
     class VKRenderer : public Renderer
@@ -20,22 +19,27 @@ namespace LG
         virtual void Shutdown() override;
         virtual void RenderFrame()  override;
         virtual void RendererWaitIdle() override;
+        inline float GetAspectRatio() const { return m_swapChain->ExtentAspectRatio(); }
     private:
-        void CreatePipelineLayout();
-        void CreatePipeline();
+
+        void BeginFrame();
+        void EndFrame();
+
+        void BeginSwapChainRenderPass();
+        void EndSwapChainRenderPass();
+
         void CreateCommandBuffers();
         void FreeCommandBuffers();
-        void LoadModels();
 
         void RecreateSwapChain();
-        void RecordCommandBuffer(int imageIndex);
     private:
         EngineWindow* m_engineWindow;
         std::unique_ptr<VKDevice> m_device;
         std::unique_ptr<VKSwapChain> m_swapChain;
-        std::unique_ptr<VKPipeline> m_pipeline;
-        VkPipelineLayout m_pipelineLayout;
         std::vector<VkCommandBuffer> m_commandBuffers;
-        std::unique_ptr<VKModel> m_model;
+        std::unique_ptr<VKSimpleRenderSystem> m_simpleRenderSystem;
+        VKCamera m_camera;
+        uint32_t m_currentImageIndex;
+        bool m_isFrameStarted;
     };
 } // namespace LG

@@ -6,7 +6,6 @@ namespace LG
     EngineWindow::EngineWindow(WindowSettings windowSettings)
         : Window(windowSettings)
     {
-
     }
 
     EngineWindow::~EngineWindow()
@@ -24,9 +23,8 @@ namespace LG
         engineWindow->m_windowSettings.m_height = height;
     }
 
-    void EngineWindow::OpenWindow(WindowSettings data)
+    void EngineWindow::Init()
     {
-        m_windowSettings = data;
         if(!glfwInit())
         {
             LG_CORE_CRITICAL("Couldn't initialize GLFW!");
@@ -34,7 +32,7 @@ namespace LG
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        m_window = glfwCreateWindow(data.m_width, data.m_height, data.m_name, nullptr, nullptr);
+        m_window = glfwCreateWindow(m_windowSettings.m_width, m_windowSettings.m_height, m_windowSettings.m_name, nullptr, nullptr);
         glfwSetWindowUserPointer(m_window, this);
         glfwSetFramebufferSizeCallback(m_window, FrameBufferResizedCB);
     }
