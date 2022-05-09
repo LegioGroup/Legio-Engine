@@ -1,9 +1,10 @@
 #pragma once
 #include <memory>
 #include <any>
-#include <Legio/platform/Window.h>
 #include <Legio/platform/Log.h>
+#include <Legio/platform/Window.h>
 #include <Legio/rendering/Renderer.h>
+#include <Legio/platform/Input.h>
 
 
 #define LG_PROVIDE_FN(Class, sourcePtr, targetPtr)             \
@@ -23,19 +24,22 @@ namespace LG
     {
     public:
 
-        LG_PROVIDE_FN(Window, window, m_window);
         LG_PROVIDE_FN(Log, log, m_log);
+        LG_PROVIDE_FN(Window, window, m_window);
+        LG_PROVIDE_FN(Input, input, m_input);
         LG_PROVIDE_FN(Renderer, renderer, m_renderer);
 
         static inline void ShutdownServices()
         {
+            m_renderer.reset();
+            m_input.reset();
             m_window.reset();
             m_log.reset();
-            m_renderer.reset();
         }
 
     private:
         static inline std::unique_ptr<Window> m_window = nullptr;
+        static inline std::unique_ptr<Input> m_input = nullptr;
         static inline std::unique_ptr<Log> m_log = nullptr;
         static inline std::unique_ptr<Renderer> m_renderer = nullptr;
     };

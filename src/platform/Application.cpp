@@ -3,7 +3,7 @@
 #include <Legio/platform/Log.h>
 #include <Legio/platform/Window.h>
 
-#include "EngineWindow.h"
+#include "WindowsInput.h"
 #include "rendering/vulkan/VKRenderer.h"
 
 namespace LG
@@ -47,10 +47,12 @@ namespace LG
     {
         ServiceLocator::Provide(new Log());
         ServiceLocator::Provide(new EngineWindow({800, 600, m_appName.c_str()}));
+        ServiceLocator::Provide(new WindowsInput());
         ServiceLocator::Provide(new VKRenderer());
 
         ServiceLocator::GetLog()->Init();
         ServiceLocator::GetWindow()->Init();
+        ServiceLocator::GetInput()->Init();
         ServiceLocator::GetRenderer()->Init(RendererSettings());
 
         LG_CORE_INFO("Services Initiated!");

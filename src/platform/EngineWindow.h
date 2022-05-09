@@ -15,6 +15,7 @@ namespace LG
 
         inline bool WasWindowResized() const { return m_frameBufferResized; };
         inline void ResetWindowResizedFlag() { m_frameBufferResized = false; };
+        inline GLFWwindow* GetNativeWindow() const { return m_window; }
         //Vulkan Specific
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
         VkExtent2D GetExtent();
