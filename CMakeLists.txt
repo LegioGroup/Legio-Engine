@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(external/glm)
 add_subdirectory(external/glfw)
 add_subdirectory(external/spdlog)
+add_subdirectory(external/imgui)
 
 #Find Packages
 find_package(Vulkan REQUIRED)
@@ -26,6 +27,7 @@ target_include_directories(${PROJECT_NAME}
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         glm
+        imgui
         spdlog/include
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -39,5 +41,8 @@ target_link_libraries(${PROJECT_NAME}
         spdlog
     PRIVATE
         glfw
+        imgui
+        imgui-glfw
+        imgui-vulkan
         ${Vulkan_LIBRARIES}
 )
