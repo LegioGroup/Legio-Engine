@@ -7,7 +7,7 @@ namespace LG
     struct SimplePushConstantData //Temporary
     {
         glm::mat4 transform{ 1.f };
-        glm::mat4 modelMatrix{ 1.f };
+        glm::mat4 normalMatrix{ 1.f };
     };
 
     VKSimpleRenderSystem::VKSimpleRenderSystem(VKDevice& device, VkRenderPass renderPass, VKCamera& camera)
@@ -109,9 +109,9 @@ namespace LG
             obj.m_transformComponent.rotation.z = glm::mod(obj.m_transformComponent.rotation.z - 0.0002f, glm::two_pi<float>());
 
             SimplePushConstantData push{};
-            auto modelMatrix = obj.m_transformComponent.mat4();
+            auto modelMatrix = obj.m_transformComponent.Mat4();
             push.transform = projectionView * modelMatrix; //Might want to do in the vertex Shader
-            push.modelMatrix = modelMatrix;
+            push.normalMatrix = obj.m_transformComponent.NormalMatrix();;
 
             vkCmdPushConstants(commandBuffer, m_pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
             obj.m_model->Bind(commandBuffer); //Bind model that contains vertex data
