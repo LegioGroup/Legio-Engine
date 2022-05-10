@@ -36,9 +36,11 @@ namespace LG
         glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
         {
             auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
-            data.m_frameBufferResized = true;
             data.m_width = width;
             data.m_height = height;
+
+            FrameBufferResizeEvent event(width, height);
+            data.m_eventCallbackFn(event);
         });
 
         glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height)

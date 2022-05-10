@@ -13,8 +13,6 @@ namespace LG
         virtual void Init() override;
         virtual bool Update() override;
 
-        inline bool WasWindowResized() const { return m_data.m_frameBufferResized; };
-        inline void ResetWindowResizedFlag() { m_data.m_frameBufferResized = false; };
         inline GLFWwindow* GetNativeWindow() const { return m_window; }
         virtual void SetEventCallback(const EventCallbackFn& callback) { m_data.m_eventCallbackFn = callback; };
         //Vulkan Specific
@@ -32,7 +30,6 @@ namespace LG
             const char* m_name;
             int m_width;
             int m_height;
-            bool m_frameBufferResized = false;
             EventCallbackFn m_eventCallbackFn;
         };
 

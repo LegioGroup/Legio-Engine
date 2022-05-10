@@ -11,7 +11,7 @@ namespace LG
     enum class EventType
     {
         None = 0,
-        WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
+        WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved, FrameBufferResize,
         AppTick, AppUpdate, AppRender,
         KeyPressed, KeyReleased, KeyTyped,
         MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
@@ -281,6 +281,30 @@ namespace LG
         }
 
         EVENT_CLASS_TYPE(WindowResize)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
+    private:
+        unsigned int m_width;
+        unsigned int m_height;
+    };
+
+    class FrameBufferResizeEvent : public Event
+    {
+    public:
+        FrameBufferResizeEvent(unsigned int width, unsigned int height)
+            : m_width(width)
+            , m_height(height) {}
+
+        inline unsigned int GetWidth() const { return m_width; }
+        inline unsigned int GetHeight() const { return m_height; }
+
+        virtual std::string ToString() const override
+        {
+            std::stringstream ss;
+            ss << "FrameBufferResizeEvent: " << m_width << ", " << m_height;
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(FrameBufferResize)
         EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
     private:
         unsigned int m_width;

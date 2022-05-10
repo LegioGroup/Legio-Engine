@@ -70,9 +70,9 @@ namespace LG
 
         auto result = m_swapChain->SubmitCommandBuffers(&m_commandBuffers[m_currentImageIndex], &m_currentImageIndex);
 
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_engineWindow->WasWindowResized())
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_needRecreateSwapChain)
         {
-            m_engineWindow->ResetWindowResizedFlag();
+            m_needRecreateSwapChain = false;
             RecreateSwapChain();
             return;
         }
@@ -134,6 +134,20 @@ namespace LG
 
         EndSwapChainRenderPass();
         EndFrame();
+    }
+
+    void VKRenderer::OnEvent(Event& event)
+    {
+
+        EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<FrameBufferResizeEvent>(LG_BIND_EVENT_FN(VKRenderer::OnFrameBufferResizeEvent));
+
+    }
+
+    bool VKRenderer::OnFrameBufferResizeEvent(FrameBufferResizeEvent& e)
+    {
+        m_needRecreateSwapChain = true;
+        return false;
     }
 
     void VKRenderer::RendererWaitIdle()

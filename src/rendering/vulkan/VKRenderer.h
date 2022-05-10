@@ -20,6 +20,7 @@ namespace LG
         virtual void RenderFrame()  override;
         virtual void RendererWaitIdle() override;
         inline float GetAspectRatio() const { return m_swapChain->ExtentAspectRatio(); }
+        virtual void OnEvent(Event& event) override;
     private:
 
         void BeginFrame();
@@ -32,6 +33,8 @@ namespace LG
         void FreeCommandBuffers();
 
         void RecreateSwapChain();
+
+        bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
     private:
         EngineWindow* m_engineWindow;
         std::unique_ptr<VKDevice> m_device;
@@ -41,5 +44,6 @@ namespace LG
         VKCamera m_camera;
         uint32_t m_currentImageIndex;
         bool m_isFrameStarted;
+        bool m_needRecreateSwapChain = false;
     };
 } // namespace LG
