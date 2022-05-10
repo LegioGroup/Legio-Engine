@@ -22,7 +22,6 @@ namespace LG
         void LoadGameObjects();
         void CreatePipelineLayout();
         void CreatePipeline(VkRenderPass renderPass);
-
     private:
         VKDevice& m_device;
         VKCamera& m_camera;

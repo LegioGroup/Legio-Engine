@@ -9,9 +9,9 @@ namespace LG
 
     struct TransformComponent 
     {
-        glm::vec3 translation{};
+        glm::vec3 translation{0.f};
         glm::vec3 scale{1.f , 1.f, 1.f};
-        glm::vec3 rotation;
+        glm::vec3 rotation{0.f};
 
         //Translate * Ry * Rx * Rz * Scale
         //Trait-bryan angles Y(1) X(2) Z(3)

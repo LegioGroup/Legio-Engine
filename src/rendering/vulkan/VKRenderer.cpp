@@ -1,6 +1,7 @@
 #include <array>
 #include <Legio/ServiceLocator.h>
 #include <Legio/platform/Log.h>
+#include "platform/WindowsInput.h"
 
 #include "rendering/vulkan/VKRenderer.h"
 
@@ -21,7 +22,6 @@ namespace LG
         m_swapChain = std::make_unique<VKSwapChain>(*m_device, m_engineWindow->GetExtent());
 
         m_camera = VKCamera();
-        m_camera.SetPerspectiveProjection(glm::radians(50.f), GetAspectRatio(), 0.1f, 10.f);
         m_camera.SetViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
 
         m_simpleRenderSystem = std::make_unique<VKSimpleRenderSystem>(*m_device, m_swapChain->GetRenderPass(), m_camera);
@@ -138,10 +138,52 @@ namespace LG
 
     void VKRenderer::OnEvent(Event& event)
     {
-
         EventDispatcher dispatcher(event);
         dispatcher.Dispatch<FrameBufferResizeEvent>(LG_BIND_EVENT_FN(VKRenderer::OnFrameBufferResizeEvent));
+        dispatcher.Dispatch<AppTickEvent>(LG_BIND_EVENT_FN(VKRenderer::OnAppTickEvent));
+    }
 
+    bool VKRenderer::OnAppTickEvent(AppTickEvent& event)
+    {
+        float fixedTick = event.GetFixedTick();
+        glm::vec3 rotate{ 0.f };
+
+        if(ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_RIGHT))  rotate.y +=1;
+        if(ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_LEFT))   rotate.y -=1;
+        if(ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_UP))     rotate.x +=1;
+        if(ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_DOWN))   rotate.x -=1;
+
+        if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) 
+        {
+            m_cameraGameObject.m_transformComponent.rotation += m_camera.GetLookSpeed() * fixedTick * glm::normalize(rotate);
+        }
+
+        m_cameraGameObject.m_transformComponent.rotation.x = glm::clamp(m_cameraGameObject.m_transformComponent.rotation.x, -1.5f, 1.5f);
+        m_cameraGameObject.m_transformComponent.rotation.y = glm::mod(m_cameraGameObject.m_transformComponent.rotation.y, glm::two_pi<float>());
+
+        float yaw = m_cameraGameObject.m_transformComponent.rotation.y;
+        const glm::vec3 forwardDir{ sin(yaw), 0.f, cos(yaw) };
+        const glm::vec3 rightDir{ forwardDir.z, 0.f, -forwardDir.x };
+        const glm::vec3 upDir{ 0.f, -1.f, 0.f };
+
+        glm::vec3 moveDir { 0.f };
+        if (ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_W)) moveDir += forwardDir;
+        if (ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_S)) moveDir -= forwardDir;
+        if (ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_D)) moveDir += rightDir;
+        if (ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_A)) moveDir -= rightDir;
+        if (ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_Q)) moveDir += upDir;
+        if (ServiceLocator::GetInput()->IsKeyPressed(LG_KEY_E)) moveDir -= upDir;
+
+        
+        if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) 
+        {
+            m_cameraGameObject.m_transformComponent.translation += m_camera.GetMoveSpeed() * fixedTick * glm::normalize(moveDir);
+        }
+
+        m_camera.SetViewYXZ(m_cameraGameObject.m_transformComponent.translation, m_cameraGameObject.m_transformComponent.rotation);
+        m_camera.SetPerspectiveProjection(glm::radians(50.f), GetAspectRatio(), 0.1f, 10000.f);
+
+        return false;
     }
 
     bool VKRenderer::OnFrameBufferResizeEvent(FrameBufferResizeEvent& e)

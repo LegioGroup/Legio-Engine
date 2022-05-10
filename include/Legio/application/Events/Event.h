@@ -322,10 +322,15 @@ namespace LG
 
     class AppTickEvent : public Event
     {
-        AppTickEvent() = default;
+    public:
+        AppTickEvent(float fixedTick) : m_fixedTick(fixedTick){}
 
+        const float GetFixedTick() const { return m_fixedTick; }
         EVENT_CLASS_TYPE(AppUpdate)
         EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
+
+        private:
+            float m_fixedTick;
     };
 
     class  AppUpdateEvent : public Event
@@ -338,6 +343,7 @@ namespace LG
 
     class AppRenderEvent : public Event
     {
+    public:
         AppRenderEvent() = default;
 
         EVENT_CLASS_TYPE(AppRender)

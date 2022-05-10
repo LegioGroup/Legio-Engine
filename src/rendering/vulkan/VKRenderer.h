@@ -35,12 +35,15 @@ namespace LG
         void RecreateSwapChain();
 
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
+        bool OnAppTickEvent(AppTickEvent& event);
     private:
         EngineWindow* m_engineWindow;
         std::unique_ptr<VKDevice> m_device;
         std::unique_ptr<VKSwapChain> m_swapChain;
         std::vector<VkCommandBuffer> m_commandBuffers;
         std::unique_ptr<VKSimpleRenderSystem> m_simpleRenderSystem;
+        //To keep track of the camera transform.
+        VKGameObject m_cameraGameObject = VKGameObject::CreateGameObject();
         VKCamera m_camera;
         uint32_t m_currentImageIndex;
         bool m_isFrameStarted;

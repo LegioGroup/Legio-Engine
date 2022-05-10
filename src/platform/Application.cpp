@@ -35,6 +35,8 @@ namespace LG
             m_clock.InitUpdatesToProcess();
             while(m_clock.ProcessUpdates())
             {
+                AppTickEvent event(m_clock.GetFixedTick());
+                OnEvent(event);
                 Update(m_clock.GetFixedTick());
             }
 
@@ -70,7 +72,7 @@ namespace LG
 
     void Application::OnEvent(Event& event)
     {
-        LG_CORE_INFO("Event: {0}", event.ToString());
+        //LG_CORE_INFO("Event: {0}", event.ToString());
         ServiceLocator::GetRenderer()->OnEvent(event);
     }
 
