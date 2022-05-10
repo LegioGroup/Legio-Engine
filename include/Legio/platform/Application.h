@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <Legio/platform/Clock.h>
+#include <Legio/application/Events/Event.h>
 namespace LG
 {
     class Application
@@ -9,7 +10,7 @@ namespace LG
         explicit Application(std::string appName = "Main App");
         virtual ~Application();
         void Run();
-
+        void OnEvent(Event& event);
     private:
         void InitServices();
         void ShutdownServices();

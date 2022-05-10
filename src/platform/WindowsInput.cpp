@@ -8,7 +8,7 @@ namespace LG
     {
         const auto& window = static_cast<EngineWindow*>(ServiceLocator::GetWindow())->GetNativeWindow();
         int state = glfwGetKey(window, keyCode);
-        return state == (GLFW_PRESS || GLFW_REPEAT);
+        return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
 
     bool WindowsInput::IsMouseButtonPressed(int button)

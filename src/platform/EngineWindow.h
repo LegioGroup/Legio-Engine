@@ -8,14 +8,15 @@ namespace LG
     class EngineWindow : public Window
     {
     public:
-        EngineWindow(WindowSettings windowSettings = WindowSettings());
-        ~EngineWindow();
+        EngineWindow(WindowProps windowSettings = WindowProps());
+        virtual ~EngineWindow();
         virtual void Init() override;
         virtual bool Update() override;
 
-        inline bool WasWindowResized() const { return m_frameBufferResized; };
-        inline void ResetWindowResizedFlag() { m_frameBufferResized = false; };
+        inline bool WasWindowResized() const { return m_data.m_frameBufferResized; };
+        inline void ResetWindowResizedFlag() { m_data.m_frameBufferResized = false; };
         inline GLFWwindow* GetNativeWindow() const { return m_window; }
+        virtual void SetEventCallback(const EventCallbackFn& callback) { m_data.m_eventCallbackFn = callback; };
         //Vulkan Specific
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
         VkExtent2D GetExtent();
@@ -25,6 +26,17 @@ namespace LG
 
     private:
         GLFWwindow* m_window = nullptr;
-        bool m_frameBufferResized = false;
+
+        struct WindowData
+        {
+            const char* m_name;
+            int m_width;
+            int m_height;
+            bool m_frameBufferResized = false;
+            EventCallbackFn m_eventCallbackFn;
+        };
+
+        WindowData m_data;
+
     };
 } //namespace LG

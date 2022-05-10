@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
 #include <sstream>
+#include <functional>
 
 #define BIT(x) (1 << x)
+#define LG_BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
 namespace LG
 {
-    enum EventType
+    enum class EventType
     {
         None = 0,
         WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
@@ -15,22 +17,25 @@ namespace LG
         MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
     };
 
-    enum EventCategory
-    {
-        None = 0,
-        Application = BIT(0),
-        Input =       BIT(1),
-        KeyBoard =    BIT(2),
-        Mouse =       BIT(3),
-        MouseButton = BIT(14),
-    };
+
+   enum EventCategory
+   {
+       None = 0,
+       EventCategoryApplication = BIT(0),
+       EventCategoryInput =       BIT(1),
+       EventCategoryKeyBoard =    BIT(2),
+       EventCategoryMouse =       BIT(3),
+       EventCategoryMouseButton = BIT(14),
+   };
+    
+
 
     #define EVENT_CLASS_TYPE(type)                                          \
         static EventType GetStaticType() { return EventType::##type; }      \
-        virtual EventType GetEventType() const { return GetStaticType(); }  \
-        virtual const char* GetName() const { return #type; }               \
+        virtual EventType GetEventType() const override { return GetStaticType(); }  \
+        virtual const char* GetName() const override { return #type; }               \
 
-    #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() { return category; } 
+    #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; } 
 
     class Event
     {
@@ -41,14 +46,14 @@ namespace LG
         virtual const char* GetName() const = 0;
         virtual int GetCategoryFlags() const = 0;
         virtual std::string ToString() const { return GetName(); }
-        bool Handled() const { return m_Handled; }
+        bool Handled() const { return m_handled; }
 
         inline bool IsInCategory(EventCategory category)
         {
             return GetCategoryFlags() & category;
         }
     protected:
-        bool m_Handled = false;
+        bool m_handled = false;
     };
 
     class EventDispatcher
@@ -65,7 +70,7 @@ namespace LG
         {
             if(m_event.GetEventType() == T::GetStaticType())
             {
-                m_event.m_Handled = func(*(T*)&m_event;)
+                m_event.m_handled = func(*(T*)&m_event);
                 return true; 
             }
             return false;
@@ -89,7 +94,7 @@ namespace LG
     public:
         inline int GetKeyCode() { return m_keyCode; }
 
-        EVENT_CLASS_CATEGORY(EventCategory::KeyBoard | EventCategory::Input)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryKeyBoard | EventCategory::EventCategoryInput)
 
     protected:
         KeyEvent(int keyCode) : m_keyCode(keyCode){}
@@ -173,7 +178,7 @@ namespace LG
         }
 
         EVENT_CLASS_TYPE(MouseMoved)
-        EVENT_CLASS_CATEGORY(EventCategory::Mouse | EventCategory::Input)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryInput)
 
     private:
         float m_mouseX;
@@ -198,7 +203,7 @@ namespace LG
         }
 
         EVENT_CLASS_TYPE(MouseScrolled)
-        EVENT_CLASS_CATEGORY(EventCategory::Mouse | EventCategory::Input)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryInput)
 
     private:
         float m_xOffset;
@@ -210,7 +215,7 @@ namespace LG
     public:
         inline int GetMouseButton() const { return m_button; }
 
-        EVENT_CLASS_CATEGORY(EventCategory::Mouse | EventCategory::Input)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryMouse | EventCategory::EventCategoryInput)
 
     protected:
         MouseButtonEvent(int button)
@@ -276,7 +281,7 @@ namespace LG
         }
 
         EVENT_CLASS_TYPE(WindowResize)
-        EVENT_CLASS_CATEGORY(EventCategory::Application)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
     private:
         unsigned int m_width;
         unsigned int m_height;
@@ -288,7 +293,7 @@ namespace LG
         WindowCloseEvent() = default;
 
         EVENT_CLASS_TYPE(WindowClose)
-        EVENT_CLASS_CATEGORY(EventCategory::Application)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
     };
 
     class AppTickEvent : public Event
@@ -296,7 +301,7 @@ namespace LG
         AppTickEvent() = default;
 
         EVENT_CLASS_TYPE(AppUpdate)
-        EVENT_CLASS_CATEGORY(EventCategory::Application)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
     };
 
     class  AppUpdateEvent : public Event
@@ -304,7 +309,7 @@ namespace LG
         AppUpdateEvent() = default;
 
         EVENT_CLASS_TYPE(AppUpdate)
-        EVENT_CLASS_CATEGORY(EventCategory::Application)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
     };
 
     class AppRenderEvent : public Event
@@ -312,6 +317,6 @@ namespace LG
         AppRenderEvent() = default;
 
         EVENT_CLASS_TYPE(AppRender)
-        EVENT_CLASS_CATEGORY(EventCategory::Application)
+        EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
     };
 } // namespace LG

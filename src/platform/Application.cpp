@@ -2,6 +2,8 @@
 #include <Legio/ServiceLocator.h>
 #include <Legio/platform/Log.h>
 #include <Legio/platform/Window.h>
+#include <Legio/application/Events/Event.h>
+
 
 #include "WindowsInput.h"
 #include "rendering/vulkan/VKRenderer.h"
@@ -50,6 +52,8 @@ namespace LG
         ServiceLocator::Provide(new WindowsInput());
         ServiceLocator::Provide(new VKRenderer());
 
+        ServiceLocator::GetWindow()->SetEventCallback(LG_BIND_EVENT_FN(Application::OnEvent));
+
         ServiceLocator::GetLog()->Init();
         ServiceLocator::GetWindow()->Init();
         ServiceLocator::GetInput()->Init();
@@ -62,6 +66,11 @@ namespace LG
     {
         LG_CORE_INFO("Shutdown Services!");
         ServiceLocator::ShutdownServices();
+    }
+
+    void Application::OnEvent(Event& event)
+    {
+        LG_CORE_INFO("Event: {0}", event.ToString());
     }
 
 } //namespace LG

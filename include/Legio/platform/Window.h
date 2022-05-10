@@ -1,10 +1,10 @@
 #pragma once
-
+#include <Legio/application/Events/Event.h>
 namespace LG
 {
-    struct WindowSettings
+    struct WindowProps
     {
-        WindowSettings(int width = 800, int height = 600, const char* name = "MainWindow")
+        WindowProps(int width = 800, int height = 600, const char* name = "MainWindow")
             : m_width(width)
             , m_height(height)
             , m_name(name)
@@ -18,13 +18,11 @@ namespace LG
     class Window
     {
     public:
-        Window(WindowSettings windowSettings = WindowSettings()) : m_windowSettings(windowSettings) {};
-        virtual ~Window() = default;
+        using EventCallbackFn = std::function<void(Event&)>;
+
+        Window(WindowProps windowSettings = WindowProps()) {};
         virtual void Init() = 0;
         virtual bool Update() = 0;
-        inline WindowSettings GetWindowSettings() const { return m_windowSettings; };
-        inline void SetWindowSettings(const WindowSettings& newWindowSettings){ m_windowSettings = newWindowSettings; };
-    protected:
-        WindowSettings m_windowSettings;
+        virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
     };
 } //namespace LG

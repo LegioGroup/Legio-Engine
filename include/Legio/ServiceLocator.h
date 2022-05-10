@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <any>
+#include <Legio/application/Events/Event.h>
 #include <Legio/platform/Log.h>
 #include <Legio/platform/Window.h>
 #include <Legio/rendering/Renderer.h>
@@ -38,9 +39,10 @@ namespace LG
         }
 
     private:
+
+        static inline std::unique_ptr<Log> m_log = nullptr;
         static inline std::unique_ptr<Window> m_window = nullptr;
         static inline std::unique_ptr<Input> m_input = nullptr;
-        static inline std::unique_ptr<Log> m_log = nullptr;
         static inline std::unique_ptr<Renderer> m_renderer = nullptr;
     };
 
