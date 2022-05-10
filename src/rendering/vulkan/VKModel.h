@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rendering/vulkan/VKDevice.h"
+#include "rendering/vulkan/VKBuffer.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_ONE
@@ -53,12 +53,11 @@ namespace LG {
         void CreateIndexBuffers(const std::vector<uint32_t>& indices);
     private:
         VKDevice& m_device;
-        VkBuffer m_vertexBuffer;
-        VkDeviceMemory m_vertexBufferMemory;
+
+        std::unique_ptr<VKBuffer> m_vertexBuffer;
         uint32_t m_vertexCount;
 
-        VkBuffer m_indexBuffer;
-        VkDeviceMemory m_indexBufferMemory;
+        std::unique_ptr<VKBuffer> m_indexBuffer;
         uint32_t m_indexCount;
         
         bool m_hasIndexBuffer = false;
