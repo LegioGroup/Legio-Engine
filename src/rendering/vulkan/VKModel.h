@@ -20,7 +20,13 @@ namespace LG {
             static std::vector<VkVertexInputAttributeDescription> GetAttributesDescriptions();
         };
 
-        VKModel(VKDevice& device, const std::vector<Vertex>& vertices);
+        struct Builder
+        {
+            std::vector<Vertex> vertices{};
+            std::vector<uint32_t> indices{};
+        };
+
+        VKModel(VKDevice& device, const Builder& builder);
         ~VKModel();
 
         VKModel(const VKModel&) = delete;
@@ -31,11 +37,17 @@ namespace LG {
 
     private:
         void CreateVertexBuffers(const std::vector<Vertex>& vertices);
-
+        void CreateIndexBuffers(const std::vector<uint32_t>& indices);
     private:
         VKDevice& m_device;
         VkBuffer m_vertexBuffer;
         VkDeviceMemory m_vertexBufferMemory;
         uint32_t m_vertexCount;
+
+        VkBuffer m_indexBuffer;
+        VkDeviceMemory m_indexBufferMemory;
+        uint32_t m_indexCount;
+        
+        bool m_hasIndexBuffer = false;
     };
 }
