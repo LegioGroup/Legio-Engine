@@ -17,11 +17,6 @@ namespace LG
         glfwTerminate();
     }
 
-    void EngineWindow::FrameBufferResizedCB(GLFWwindow* window, int width, int height)
-    {
-
-    }
-
     void EngineWindow::Init()
     {
         if(!glfwInit())
@@ -35,7 +30,7 @@ namespace LG
         glfwSetWindowUserPointer(m_window, &m_data);
         glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
         {
-            auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
             data.m_width = width;
             data.m_height = height;
 
@@ -119,12 +114,18 @@ namespace LG
             MouseMovedEvent event(static_cast<float>(x), static_cast<float>(y));
             data.m_eventCallbackFn(event);
         });
+
+        glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window)
+        {
+            auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            WindowCloseEvent event;
+            data.m_eventCallbackFn(event);
+        });
     }
 
-    bool EngineWindow::Update()
+    void EngineWindow::Update()
     {
         glfwPollEvents();
-        return glfwWindowShouldClose(m_window);
     }
 
      void EngineWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)

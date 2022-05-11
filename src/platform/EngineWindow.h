@@ -11,16 +11,13 @@ namespace LG
         EngineWindow(WindowProps windowSettings = WindowProps());
         virtual ~EngineWindow();
         virtual void Init() override;
-        virtual bool Update() override;
+        virtual void Update() override;
 
         inline GLFWwindow* GetNativeWindow() const { return m_window; }
         virtual void SetEventCallback(const EventCallbackFn& callback) { m_data.m_eventCallbackFn = callback; };
         //Vulkan Specific
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
         VkExtent2D GetExtent();
-
-    private:
-        static void FrameBufferResizedCB(GLFWwindow* window, int width, int height);
 
     private:
         GLFWwindow* m_window = nullptr;

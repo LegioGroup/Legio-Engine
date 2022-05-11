@@ -12,9 +12,9 @@ namespace LG
         void Run();
         void OnEvent(Event& event);
     private:
+        bool OnWindowCloseEvent(Event& event);
         void InitServices();
         void ShutdownServices();
-
     protected:
         virtual void Update(float deltaTime){};
 

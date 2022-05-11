@@ -26,12 +26,7 @@ namespace LG
     {
         while (m_running)
         {
-            if(LG::ServiceLocator::GetWindow()->Update())
-            {
-                m_running = false;
-                continue;
-            }
-
+            LG::ServiceLocator::GetWindow()->Update();
             m_clock.InitUpdatesToProcess();
             while(m_clock.ProcessUpdates())
             {
@@ -72,8 +67,16 @@ namespace LG
 
     void Application::OnEvent(Event& event)
     {
-        //LG_CORE_INFO("Event: {0}", event.ToString());
+        EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<WindowCloseEvent>(LG_BIND_EVENT_FN(Application::OnWindowCloseEvent));
+
         ServiceLocator::GetRenderer()->OnEvent(event);
+    }
+
+    bool Application::OnWindowCloseEvent(Event& event)
+    {
+        m_running = false;
+        return true;
     }
 
 } //namespace LG
