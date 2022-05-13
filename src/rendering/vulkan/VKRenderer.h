@@ -2,7 +2,7 @@
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Log.h>
 #include "rendering/vulkan/VKSwapChain.h"
-#include <Legio/rendering/.LGCamerah>
+#include <Legio/rendering/LGCamera.h>
 #include "rendering/vulkan/renderSystems/VKSimpleRenderSystem.h"
 namespace LG
 {
