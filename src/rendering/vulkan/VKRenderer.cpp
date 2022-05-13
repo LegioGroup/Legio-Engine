@@ -21,7 +21,7 @@ namespace LG
         m_device = std::make_unique<VKDevice>(*m_engineWindow);
         m_swapChain = std::make_unique<VKSwapChain>(*m_device, m_engineWindow->GetExtent());
 
-        m_camera = VKCamera();
+        m_camera = LGCamera();
         m_camera.SetViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
 
         m_simpleRenderSystem = std::make_unique<VKSimpleRenderSystem>(*m_device, m_swapChain->GetRenderPass(), m_camera);

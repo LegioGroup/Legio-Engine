@@ -2,7 +2,7 @@
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Log.h>
 #include "rendering/vulkan/VKSwapChain.h"
-#include "rendering/vulkan/VKCamera.h"
+#include <Legio/rendering/.LGCamerah>
 #include "rendering/vulkan/renderSystems/VKSimpleRenderSystem.h"
 namespace LG
 {
@@ -44,7 +44,7 @@ namespace LG
         std::unique_ptr<VKSimpleRenderSystem> m_simpleRenderSystem;
         //To keep track of the camera transform.
         VKGameObject m_cameraGameObject = VKGameObject::CreateGameObject();
-        VKCamera m_camera;
+        LGCamera m_camera;
         uint32_t m_currentImageIndex;
         bool m_isFrameStarted;
         bool m_needRecreateSwapChain = false;

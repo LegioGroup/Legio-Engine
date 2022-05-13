@@ -10,7 +10,7 @@ namespace LG
         glm::mat4 normalMatrix{ 1.f };
     };
 
-    VKSimpleRenderSystem::VKSimpleRenderSystem(VKDevice& device, VkRenderPass renderPass, VKCamera& camera)
+    VKSimpleRenderSystem::VKSimpleRenderSystem(VKDevice& device, VkRenderPass renderPass, LGCamera& camera)
         : m_device(device)
         , m_camera(camera)
     {

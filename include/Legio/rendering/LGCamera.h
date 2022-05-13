@@ -6,10 +6,10 @@
 
 namespace LG
 {
-    class VKCamera
+    class LGCamera
     {
     public:
-        VKCamera() = default;
+        LGCamera() = default;
         void SetOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
         void SetPerspectiveProjection(float fovy, float aspect, float near, float far);
         void SetViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up = glm::vec3{ 0.0f, -1.0f, 0.0f });
