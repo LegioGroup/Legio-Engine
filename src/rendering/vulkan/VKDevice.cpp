@@ -1,5 +1,5 @@
 #include "rendering/vulkan/VKDevice.h"
-
+#include <Legio/ServiceLocator.h>
 // std headers
 #include <cstring>
 #include <iostream>
@@ -16,8 +16,22 @@ namespace LG {
         const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
         void* pUserData) 
     {
-        std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-
+        switch (messageSeverity)
+        {
+        default:
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+            LG_CORE_ERROR(pCallbackData->pMessage);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+            LG_CORE_WARN(pCallbackData->pMessage);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+            LG_CORE_INFO(pCallbackData->pMessage);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+            LG_CORE_TRACE(pCallbackData->pMessage);
+            break;
+        }
         return VK_FALSE;
     }
 
