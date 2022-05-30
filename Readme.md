@@ -5,7 +5,8 @@
 Legio Engine is a small game engine created with the aim to learn graphics programming and how Game Engine systems interact with ecach other.
 This engine is in very early development stages.
 
-![](data%5CLegioEngineCarRender.png)
+![Car Rendered in Legio Game Engine](https://github.com/LegioGroup/Legio-Engine/blob/main/data/LegioEngineCarRender.png)
+
 
 ## Instructions
 
