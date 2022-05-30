@@ -1,8 +1,6 @@
 #pragma once
-#include <Legio/rendering/Renderer.h>
-#include <Legio/platform/Log.h>
-#include "rendering/vulkan/VKSwapChain.h"
 #include <Legio/rendering/LGCamera.h>
+#include "rendering/vulkan/VKSwapChain.h"
 #include "rendering/vulkan/renderSystems/VKSimpleRenderSystem.h"
 namespace LG
 {

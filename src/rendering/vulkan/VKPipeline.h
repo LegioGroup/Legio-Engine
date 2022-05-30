@@ -1,7 +1,5 @@
 #pragma once
-#include <Legio/platform/Log.h>
 #include "rendering/vulkan/VKDevice.h"
-
 #include <string>
 #include <vector>
 namespace LG {

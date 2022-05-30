@@ -1,11 +1,10 @@
 #include "rendering/vulkan/VKDevice.h"
-#include <Legio/ServiceLocator.h>
+#include <Legio/LegioCore.h>
 // std headers
 #include <cstring>
 #include <iostream>
 #include <set>
 #include <unordered_set>
-#include <Legio/platform/Log.h>
 
 namespace LG {
 

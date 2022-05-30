@@ -1,6 +1,5 @@
 #include <array>
-#include <Legio/ServiceLocator.h>
-#include <Legio/platform/Log.h>
+#include <Legio/legioCore.h>
 #include "platform/WindowsInput.h"
 
 #include "rendering/vulkan/VKRenderer.h"

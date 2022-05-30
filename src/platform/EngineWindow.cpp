@@ -1,5 +1,5 @@
 #include "EngineWindow.h"
-#include <Legio/platform/Log.h>
+#include <Legio/LegioCore.h>
 namespace LG
 {
 

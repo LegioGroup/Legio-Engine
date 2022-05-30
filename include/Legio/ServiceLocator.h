@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include <any>
 #include <Legio/application/Events/Event.h>
 #include <Legio/platform/Log.h>

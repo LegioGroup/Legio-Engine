@@ -1,4 +1,4 @@
-#include <Legio/ServiceLocator.h>
+#include <Legio/LegioCore.h>
 #include "platform/WindowsInput.h"
 #include "platform/EngineWindow.h"
 

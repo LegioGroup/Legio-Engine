@@ -1,4 +1,4 @@
-#include <Legio/platform/Log.h>
+#include <Legio/LegioCore.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace LG

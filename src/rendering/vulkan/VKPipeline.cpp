@@ -1,3 +1,4 @@
+#include <Legio/LegioCore.h>
 #include "rendering/vulkan/VKPipeline.h"
 #include "rendering/vulkan/VKModel.h"
 #include <fstream>

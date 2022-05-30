@@ -1,10 +1,5 @@
 #include <Legio/platform/Application.h>
-#include <Legio/ServiceLocator.h>
-#include <Legio/platform/Log.h>
-#include <Legio/platform/Window.h>
-#include <Legio/application/Events/Event.h>
-
-
+#include <Legio/LegioCore.h>
 #include "WindowsInput.h"
 #include "rendering/vulkan/VKRenderer.h"
 
