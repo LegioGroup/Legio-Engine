@@ -65,7 +65,7 @@ namespace LG
 
     void VKSimpleRenderSystem::LoadGameObjects()
     {
-        std::shared_ptr<VKModel> veModel_0 = VKModel::CreateModelFromFile(m_device, "../../external/engine/models/car.obj");
+        std::shared_ptr<VKModel> veModel_0 = VKModel::CreateModelFromFile(m_device, "../../external/engine/models/colored_cube.obj");
         std::shared_ptr<VKModel> veModel_1 = VKModel::CreateModelFromFile(m_device, "../../external/engine/models/cube.obj");
         std::shared_ptr<VKModel> veModel_2 = VKModel::CreateModelFromFile(m_device, "../../external/engine/models/flat_vase.obj");
         std::shared_ptr<VKModel> veModel_3 = VKModel::CreateModelFromFile(m_device, "../../external/engine/models/smooth_vase.obj");
