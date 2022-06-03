@@ -37,9 +37,8 @@ namespace LG
         inline float GetAspectRatio() const { return m_swapChain->ExtentAspectRatio(); }
         virtual void OnEvent(Event& event) override;
 
-        // inline VKDevice* GetDevice() const { return m_device.get(); };
-        inline VkRenderPass GetRenderPass() const { return m_swapChain->GetRenderPass(); };
-
+        inline VkCommandBuffer GetCurrentCommandBuffer() const { return m_commandBuffers[m_currentImageIndex]; }
+        inline VKSwapChain* GetSwapChain() const {return m_swapChain.get(); }
         inline Vulkan_Editor_InitInfo& GetRendererEditorInitInfo() { return m_renderEditorInitInfo; }
     private:
 

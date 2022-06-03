@@ -36,6 +36,7 @@ namespace LG
 
     static void ImGui_Initialise()
     {
+        IMGUI_CHECKVERSION();
         ImGui::CreateContext();
 
         //Config
@@ -44,29 +45,74 @@ namespace LG
         io.ConfigWindowsResizeFromEdges = true;
         io.ConfigViewportsNoTaskBarIcon = true;
 
-        io.Fonts->AddFontFromFileTTF("../../external/engine/data/fonts/Calibri.ttf", k_font_size);
-        io.FontGlobalScale = k_font_scale;
+        // io.Fonts->AddFontFromFileTTF("../../external/engine/data/fonts/Calibri.ttf", k_font_size);
+        // io.FontGlobalScale = k_font_scale;
         ImGui_ImplGlfw_InitForVulkan(static_cast<EngineWindow*>(ServiceLocator::GetWindow())->GetNativeWindow(), true);
 
         VKRenderer* renderer = static_cast<VKRenderer*>(ServiceLocator::GetRenderer());
-        const VKRenderer::Vulkan_Editor_InitInfo info = renderer->GetRendererEditorInitInfo();
+        const VKRenderer::Vulkan_Editor_InitInfo vkInitinfo = renderer->GetRendererEditorInitInfo();
         ImGui_ImplVulkan_InitInfo vkInfo = {};
 
-        vkInfo.Instance = info.Instance;
-        vkInfo.PhysicalDevice = info.PhysicalDevice;
-        vkInfo.Device = info.Device;
-        vkInfo.QueueFamily = info.QueueFamily;
-        vkInfo.Queue = info.Queue;
-        vkInfo.PipelineCache = info.PipelineCache;
-        vkInfo.DescriptorPool = info.DescriptorPool;
-        vkInfo.Subpass = info.Subpass;
-        vkInfo.MinImageCount = info.MinImageCount;
-        vkInfo.ImageCount = info.ImageCount;
-        vkInfo.MSAASamples = info.MSAASamples;
-        vkInfo.Allocator = info.Allocator;
+        vkInfo.Instance = vkInitinfo.Instance;
+        vkInfo.PhysicalDevice = vkInitinfo.PhysicalDevice;
+        vkInfo.Device = vkInitinfo.Device;
+        vkInfo.QueueFamily = vkInitinfo.QueueFamily;
+        vkInfo.Queue = vkInitinfo.Queue;
+        vkInfo.PipelineCache = vkInitinfo.PipelineCache;
+        vkInfo.DescriptorPool = vkInitinfo.DescriptorPool;
+        vkInfo.Subpass = vkInitinfo.Subpass;
+        vkInfo.MinImageCount = vkInitinfo.MinImageCount;
+        vkInfo.ImageCount = vkInitinfo.ImageCount;
+        vkInfo.MSAASamples = vkInitinfo.MSAASamples;
+        vkInfo.Allocator = vkInitinfo.Allocator;
         vkInfo.CheckVkResultFn = check_vk_result;
 
-        ImGui_ImplVulkan_Init(&vkInfo, renderer->GetRenderPass());
+        VkAttachmentDescription attachment = {};
+        attachment.format = renderer->GetSwapChain()->GetSwapChainImageFormat();
+        attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+        attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        attachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+        VkAttachmentReference color_attachment = {};
+        color_attachment.attachment = 0;
+        color_attachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass = {};
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &color_attachment;
+
+        VkSubpassDependency dependency = {};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.dstSubpass = 0;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.srcAccessMask = 0;  // or VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+        VkRenderPass imGuiRenderPass;
+        VkRenderPassCreateInfo info = {};
+        info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        info.attachmentCount = 1;
+        info.pAttachments = &attachment;
+        info.subpassCount = 1;
+        info.pSubpasses = &subpass;
+        info.dependencyCount = 1;
+        info.pDependencies = &dependency;
+        if (vkCreateRenderPass(vkInfo.Device, &info, nullptr, &imGuiRenderPass) != VK_SUCCESS) {
+            throw std::runtime_error("Could not create Dear ImGui's render pass");
+        }
+
+
+        ImGui_ImplVulkan_Init(&vkInfo, imGuiRenderPass);
+        
+        VkCommandBuffer command_buffer = beginSingleTimeCommands();
+        ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
+        endSingleTimeCommands(command_buffer);   
     }
 
     static void ImGui_ShutDown()
@@ -228,6 +274,7 @@ namespace LG
         ImGui_ImplGlfw_NewFrame();
         ImGui_ImplVulkan_NewFrame();
         ImGui::NewFrame();
+        ImGui::ShowDemoWindow();
 
         BeginWindow();
 
@@ -239,7 +286,8 @@ namespace LG
         }
 
         ImGui::Render();
-        //ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),);
+        VKRenderer* renderer = static_cast<VKRenderer*>(ServiceLocator::GetRenderer());
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),renderer->GetCurrentCommandBuffer());
         //Render Stuff
     }
 
