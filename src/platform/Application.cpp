@@ -7,7 +7,7 @@
 
 #include "WindowsInput.h"
 #include "rendering/vulkan/VKRenderer.h"
-
+#include "platform/EngineWindow.h"
 namespace LG
 {
     Application::Application(std::string appName)
