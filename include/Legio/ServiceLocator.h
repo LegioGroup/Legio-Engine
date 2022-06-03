@@ -1,5 +1,6 @@
 #pragma once
 #include <any>
+#include <Legio/editor/Editor.h>
 #include <Legio/application/Events/Event.h>
 #include <Legio/platform/Log.h>
 #include <Legio/platform/Window.h>
@@ -26,11 +27,13 @@ namespace LG
 
         LG_PROVIDE_FN(Log, log, m_log);
         LG_PROVIDE_FN(Window, window, m_window);
+        LG_PROVIDE_FN(Editor, editor, m_editor);
         LG_PROVIDE_FN(Input, input, m_input);
         LG_PROVIDE_FN(Renderer, renderer, m_renderer);
 
         static inline void ShutdownServices()
         {
+            m_editor.reset();
             m_renderer.reset();
             m_input.reset();
             m_window.reset();
@@ -43,6 +46,7 @@ namespace LG
         static inline std::unique_ptr<Window> m_window = nullptr;
         static inline std::unique_ptr<Input> m_input = nullptr;
         static inline std::unique_ptr<Renderer> m_renderer = nullptr;
+        static inline std::unique_ptr<Editor> m_editor = nullptr;
     };
 
 } //namespace LG

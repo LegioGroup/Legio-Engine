@@ -25,6 +25,19 @@ namespace LG
 
         m_simpleRenderSystem = std::make_unique<VKSimpleRenderSystem>(*m_device, m_swapChain->GetRenderPass(), m_camera);
 
+        m_renderEditorInitInfo.Instance = m_device->GetInstance();
+        m_renderEditorInitInfo.PhysicalDevice = m_device->GetPhysicalDevice();
+        m_renderEditorInitInfo.Device = m_device->GetDevice();
+        m_renderEditorInitInfo.QueueFamily = m_device->FindPhysicalQueueFamilies().graphicsFamily;
+        m_renderEditorInitInfo.Queue = m_device->GetGraphicsQueue();
+        m_renderEditorInitInfo.PipelineCache = VK_NULL_HANDLE;
+        m_renderEditorInitInfo.DescriptorPool = VK_NULL_HANDLE;
+        m_renderEditorInitInfo.Subpass = 0;
+        m_renderEditorInitInfo.MinImageCount = 2;
+        m_renderEditorInitInfo.ImageCount = 2;
+        m_renderEditorInitInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+        m_renderEditorInitInfo.Allocator;
+
         RecreateSwapChain();
         CreateCommandBuffers();
     }

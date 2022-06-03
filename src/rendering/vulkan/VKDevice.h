@@ -72,7 +72,8 @@ namespace LG
             VkDeviceMemory& imageMemory);
 
         VkPhysicalDeviceProperties m_properties;
-
+        VkInstance GetInstance() const {return m_instance;}
+        VkPhysicalDevice GetPhysicalDevice() const {return m_physicalDevice;}  
     private:
         void CreateInstance();
         void SetupDebugMessenger();

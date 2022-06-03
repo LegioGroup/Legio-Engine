@@ -30,6 +30,7 @@ namespace LG
                 Update(m_clock.GetFixedTick());
             }
 
+            LG::ServiceLocator::GetEditor()->Update();
             //Draw Frame
             LG::ServiceLocator::GetRenderer()->RenderFrame();
         }
@@ -41,6 +42,7 @@ namespace LG
     {
         ServiceLocator::Provide(new Log());
         ServiceLocator::Provide(new EngineWindow({800, 600, m_appName.c_str()}));
+        ServiceLocator::Provide(new Editor());
         ServiceLocator::Provide(new WindowsInput());
         ServiceLocator::Provide(new VKRenderer());
 
@@ -50,6 +52,7 @@ namespace LG
         ServiceLocator::GetWindow()->Init();
         ServiceLocator::GetInput()->Init();
         ServiceLocator::GetRenderer()->Init(RendererSettings());
+        ServiceLocator::GetEditor()->Init();
 
         LG_CORE_INFO("Services Initiated!");
     }
