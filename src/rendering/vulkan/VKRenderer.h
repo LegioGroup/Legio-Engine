@@ -23,7 +23,11 @@ namespace LG
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
         bool CheckValidationLayerSupport();
+        std::vector<const char*> GetRequiredExtensions();
+        void SetupDebugMessenger();
+        void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
     private:
         VkInstance m_instance;
+        VkDebugUtilsMessengerEXT m_debugMessenger;
     };
 } // namespace LG
