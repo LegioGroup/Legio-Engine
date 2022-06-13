@@ -18,7 +18,7 @@ namespace LG
         virtual void SetEventCallback(const EventCallbackFn& callback) { m_data.m_eventCallbackFn = callback; };
         //Vulkan Specific
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
-        VkExtent2D GetExtent();
+        VkExtent2D GetExtent() const;
 
     private:
         static void FrameBufferResizedCB(GLFWwindow* window, int width, int height);

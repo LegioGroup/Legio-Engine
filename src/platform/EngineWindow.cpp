@@ -136,7 +136,7 @@ namespace LG
          }
      }
 
-    VkExtent2D EngineWindow::GetExtent()
+    VkExtent2D EngineWindow::GetExtent() const
     {
         return {static_cast<uint32_t>(m_data.m_width), static_cast<uint32_t>(m_data.m_height)};
     }

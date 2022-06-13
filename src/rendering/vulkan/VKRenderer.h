@@ -16,6 +16,12 @@ namespace LG
         }
     };
     
+    struct SwapChainSupportDetails {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkSurfaceFormatKHR> formats;
+        std::vector<VkPresentModeKHR> presentModes;
+    };
+
     class VKRenderer : public Renderer
     {
     public:
@@ -42,6 +48,13 @@ namespace LG
         void CreateLogicalDevice();
         //------------------Surface----------------------------
         void CreateSurface();
+        //------------------Swap Chains------------------------
+        SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+        bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+        VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+        VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+        VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+        void CreateSwapChain();
         //-----------------------------------------------------
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
@@ -58,6 +71,10 @@ namespace LG
         VkQueue m_graphicsQueue;
         VkQueue m_presentQueue;
         VkSurfaceKHR m_surface;
+        VkSwapchainKHR m_swapChain;
+        std::vector<VkImage> m_swapChainImages;
+        VkFormat m_swapChainImageFormat;
+        VkExtent2D m_swapChainExtent;
         VkDebugUtilsMessengerEXT m_debugMessenger;
     };
 } // namespace LG
