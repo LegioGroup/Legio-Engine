@@ -1,4 +1,5 @@
 #pragma once
+#include <vulkan/vulkan.h>
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Log.h>
 namespace LG
@@ -18,8 +19,11 @@ namespace LG
         virtual void RendererWaitIdle() override;
         virtual void OnEvent(Event& event) override;
     private:
+        void CreateInstance();
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
+        bool CheckValidationLayerSupport();
     private:
+        VkInstance m_instance;
     };
 } // namespace LG

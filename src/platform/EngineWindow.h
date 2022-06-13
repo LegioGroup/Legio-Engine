@@ -12,6 +12,7 @@ namespace LG
         virtual ~EngineWindow();
         virtual void Init() override;
         virtual bool Update() override;
+        static inline const char** GetRequiredInstanceExtension(uint32_t* extensionCount) {return glfwGetRequiredInstanceExtensions(extensionCount); }
 
         inline GLFWwindow* GetNativeWindow() const { return m_window; }
         virtual void SetEventCallback(const EventCallbackFn& callback) { m_data.m_eventCallbackFn = callback; };
