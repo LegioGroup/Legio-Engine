@@ -2,8 +2,19 @@
 #include <vulkan/vulkan.h>
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Log.h>
+#include <optional>
 namespace LG
 {
+    struct QueueFamilyIndices
+    {
+        std::optional<uint32_t> graphicsFamily;
+
+        bool IsComplete()
+        {
+            return graphicsFamily.has_value();
+        }
+    };
+    
     class VKRenderer : public Renderer
     {
     public:
@@ -24,6 +35,8 @@ namespace LG
         //------------------Physical Devices-------------------
         void PickPhysicalDevice();
         bool IsDeviceSuitable(VkPhysicalDevice device);
+        //------------------Queue Families---------------------
+        QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
         //-----------------------------------------------------
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
