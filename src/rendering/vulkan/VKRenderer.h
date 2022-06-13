@@ -19,15 +19,23 @@ namespace LG
         virtual void RendererWaitIdle() override;
         virtual void OnEvent(Event& event) override;
     private:
+        //------------------Instance-------------------------
         void CreateInstance();
+        //------------------Physical Devices-------------------
+        void PickPhysicalDevice();
+        bool IsDeviceSuitable(VkPhysicalDevice device);
+        //-----------------------------------------------------
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
+        //---------------------Validation Layer Support------------------
         bool CheckValidationLayerSupport();
         std::vector<const char*> GetRequiredExtensions();
         void SetupDebugMessenger();
         void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+        //-----------------------------------------------------------------
     private:
         VkInstance m_instance;
+        VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
         VkDebugUtilsMessengerEXT m_debugMessenger;
     };
 } // namespace LG

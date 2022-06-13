@@ -155,6 +155,33 @@ namespace LG
         }
     }
 
+    void VKRenderer::PickPhysicalDevice()
+    {
+        uint32_t deviceCount = 0;
+        vkEnumeratePhysicalDevices(m_instance, &deviceCount,nullptr);
+
+        if(deviceCount == 0)
+        {
+            throw std::runtime_error("Failed to find GPUs with Vulkan Support");
+        }
+
+        std::vector<VkPhysicalDevice> devices(deviceCount);
+        vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
+
+        for (const auto& device : devices)
+        {
+            if (IsDeviceSuitable(device))
+            {
+                m_physicalDevice = device;
+                break;
+            }
+        }
+
+        if (m_physicalDevice == VK_NULL_HANDLE) {
+            throw std::runtime_error("failed to find a suitable GPU!");
+        }
+    }
+
     void VKRenderer::Shutdown()
     {
         if(enableValidationLayers)
@@ -234,4 +261,16 @@ namespace LG
         createInfo.pfnUserCallback = debugCallback;
         createInfo.pUserData = nullptr;
     }
+
+    bool VKRenderer::IsDeviceSuitable(VkPhysicalDevice device)
+    {
+        VkPhysicalDeviceProperties deviceProperties;
+        vkGetPhysicalDeviceProperties(device, &deviceProperties);
+        VkPhysicalDeviceFeatures deviceFeatures;
+        vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+        return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
+            deviceFeatures.geometryShader;
+    }
+
 } // namespace LG
