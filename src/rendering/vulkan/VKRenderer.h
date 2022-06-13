@@ -55,6 +55,8 @@ namespace LG
         VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
         VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
         void CreateSwapChain();
+        //ImageViews
+        void CreateImageViews();
         //-----------------------------------------------------
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
@@ -73,6 +75,7 @@ namespace LG
         VkSurfaceKHR m_surface;
         VkSwapchainKHR m_swapChain;
         std::vector<VkImage> m_swapChainImages;
+        std::vector<VkImageView> m_swapChainImageViews;
         VkFormat m_swapChainImageFormat;
         VkExtent2D m_swapChainExtent;
         VkDebugUtilsMessengerEXT m_debugMessenger;
