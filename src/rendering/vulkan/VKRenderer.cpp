@@ -189,7 +189,7 @@ namespace LG
         QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
 
         VkDeviceQueueCreateInfo queueCreateInfo{};
-        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
         queueCreateInfo.queueCount = 1;
 
@@ -207,7 +207,7 @@ namespace LG
         if(enableValidationLayers)
         {
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-            createInfo.ppEnabledExtensionNames = validationLayers.data();
+            createInfo.ppEnabledLayerNames = validationLayers.data();
         }
         else
         {
