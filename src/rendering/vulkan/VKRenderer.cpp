@@ -1,4 +1,5 @@
 #include <array>
+#include <set>
 #include <Legio/ServiceLocator.h>
 #include <Legio/platform/Log.h>
 #include "platform/EngineWindow.h"
@@ -108,6 +109,7 @@ namespace LG
         LG_CORE_INFO("Initialize Vulkan Renderer!"); 
         CreateInstance();
         SetupDebugMessenger();
+        CreateSurface();
         PickPhysicalDevice();
         CreateLogicalDevice();
     }
@@ -188,19 +190,29 @@ namespace LG
     {
         QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
 
-        VkDeviceQueueCreateInfo queueCreateInfo{};
-        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-        queueCreateInfo.queueCount = 1;
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+        std::set<uint32_t> uniqueQuqueFamilies = {
+            indices.graphicsFamily.value(),
+            indices.presentFamily.value()
+        };
 
         float queuePriority = 1.0f;
-        queueCreateInfo.pQueuePriorities = &queuePriority;
+        for(auto queueFamily : uniqueQuqueFamilies)
+        {
+            VkDeviceQueueCreateInfo queueCreateInfo{};
+            queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queueCreateInfo.queueFamilyIndex = queueFamily;
+            queueCreateInfo.queueCount = 1;
+            queueCreateInfo.pQueuePriorities = &queuePriority;
+            queueCreateInfos.push_back(queueCreateInfo);
+        }
+
 
         VkPhysicalDeviceFeatures deviceFeatures{};
         VkDeviceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.pQueueCreateInfos = &queueCreateInfo;
-        createInfo.queueCreateInfoCount = 1;
+        createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+        createInfo.pQueueCreateInfos = queueCreateInfos.data();
         createInfo.pEnabledFeatures = &deviceFeatures; 
 
         createInfo.enabledExtensionCount = 0;
@@ -220,6 +232,14 @@ namespace LG
         }
 
         vkGetDeviceQueue(m_device, indices.graphicsFamily.value(), 0, &m_graphicsQueue);
+        vkGetDeviceQueue(m_device, indices.presentFamily.value(), 0, &m_presentQueue);
+
+    }
+
+    void VKRenderer::CreateSurface()
+    {
+        auto* engineWindow = static_cast<EngineWindow*>(ServiceLocator::GetWindow());
+        engineWindow->CreateWindowSurface(m_instance, &m_surface);
     }
 
     void VKRenderer::Shutdown()
@@ -229,7 +249,7 @@ namespace LG
         {
             DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
         }
-
+        vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
         vkDestroyInstance(m_instance, nullptr);
     }
 
@@ -333,6 +353,14 @@ namespace LG
             {
                 indices.graphicsFamily = i;
             }
+
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface, &presentSupport);
+            if(presentSupport)
+            {
+                indices.presentFamily = i;
+            }
+
             if(indices.IsComplete())
             {
                 break;

@@ -8,10 +8,11 @@ namespace LG
     struct QueueFamilyIndices
     {
         std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
 
         bool IsComplete()
         {
-            return graphicsFamily.has_value();
+            return graphicsFamily.has_value() && presentFamily.has_value();
         }
     };
     
@@ -39,6 +40,8 @@ namespace LG
         QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
         //------------------Logical Device---------------------
         void CreateLogicalDevice();
+        //------------------Surface----------------------------
+        void CreateSurface();
         //-----------------------------------------------------
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
@@ -53,6 +56,8 @@ namespace LG
         VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
         VkDevice m_device;
         VkQueue m_graphicsQueue;
+        VkQueue m_presentQueue;
+        VkSurfaceKHR m_surface;
         VkDebugUtilsMessengerEXT m_debugMessenger;
     };
 } // namespace LG
