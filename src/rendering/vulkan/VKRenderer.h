@@ -37,6 +37,8 @@ namespace LG
         bool IsDeviceSuitable(VkPhysicalDevice device);
         //------------------Queue Families---------------------
         QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+        //------------------Logical Device---------------------
+        void CreateLogicalDevice();
         //-----------------------------------------------------
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
@@ -49,6 +51,8 @@ namespace LG
     private:
         VkInstance m_instance;
         VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+        VkDevice m_device;
+        VkQueue m_graphicsQueue;
         VkDebugUtilsMessengerEXT m_debugMessenger;
     };
 } // namespace LG

@@ -108,6 +108,8 @@ namespace LG
         LG_CORE_INFO("Initialize Vulkan Renderer!"); 
         CreateInstance();
         SetupDebugMessenger();
+        PickPhysicalDevice();
+        CreateLogicalDevice();
     }
 
     void VKRenderer::CreateInstance()
@@ -182,8 +184,47 @@ namespace LG
         }
     }
 
+    void VKRenderer::CreateLogicalDevice()
+    {
+        QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
+
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+        queueCreateInfo.queueCount = 1;
+
+        float queuePriority = 1.0f;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+
+        VkPhysicalDeviceFeatures deviceFeatures{};
+        VkDeviceCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        createInfo.pQueueCreateInfos = &queueCreateInfo;
+        createInfo.queueCreateInfoCount = 1;
+        createInfo.pEnabledFeatures = &deviceFeatures; 
+
+        createInfo.enabledExtensionCount = 0;
+        if(enableValidationLayers)
+        {
+            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+            createInfo.ppEnabledExtensionNames = validationLayers.data();
+        }
+        else
+        {
+            createInfo.enabledExtensionCount = 0;
+        }
+
+        if(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed toi create logical device");
+        }
+
+        vkGetDeviceQueue(m_device, indices.graphicsFamily.value(), 0, &m_graphicsQueue);
+    }
+
     void VKRenderer::Shutdown()
     {
+        vkDestroyDevice(m_device, nullptr);
         if(enableValidationLayers)
         {
             DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
