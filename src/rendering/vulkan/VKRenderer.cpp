@@ -8,7 +8,6 @@
 #include "platform/WindowsInput.h"
 
 #include "rendering/vulkan/VKRenderer.h"
-
 namespace LG
 {
 
@@ -119,6 +118,7 @@ namespace LG
         CreateLogicalDevice();
         CreateSwapChain();
         CreateImageViews();
+        CreateGraphicsPipeline();
     }
 
     void VKRenderer::CreateInstance()
@@ -341,6 +341,17 @@ namespace LG
                 throw std::runtime_error("failed to create image views!");
             }
         }
+    }
+
+    void VKRenderer::CreateGraphicsPipeline()
+    {
+        PipelineConfigInfo pipelineConfig = {};
+        VKPipeline::DefaultPipelineConfigInfo(pipelineConfig, m_swapChainExtent.width, m_swapChainExtent.height);
+        pipelineConfig.swapChainImageFormat = m_swapChainImageFormat;
+        m_pipeline = std::make_unique<VKPipeline>(m_device, 
+        "../../external/engine/src/rendering/vulkan/shaders/basic_shader.vert.spv",
+        "../../external/engine/src/rendering/vulkan/shaders/basic_shader.frag.spv",
+        pipelineConfig);
     }
 
     SwapChainSupportDetails VKRenderer::QuerySwapChainSupport(VkPhysicalDevice device)

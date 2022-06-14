@@ -3,6 +3,8 @@
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Log.h>
 #include <optional>
+#include <memory.h>
+#include "rendering/vulkan/VKPipeline.h"
 namespace LG
 {
     struct QueueFamilyIndices
@@ -57,6 +59,8 @@ namespace LG
         void CreateSwapChain();
         //ImageViews
         void CreateImageViews();
+        //--------------------Graphics Pipeline-----------------------
+        void CreateGraphicsPipeline();
         //-----------------------------------------------------
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
@@ -74,6 +78,7 @@ namespace LG
         VkQueue m_presentQueue;
         VkSurfaceKHR m_surface;
         VkSwapchainKHR m_swapChain;
+        std::unique_ptr<VKPipeline> m_pipeline;
         std::vector<VkImage> m_swapChainImages;
         std::vector<VkImageView> m_swapChainImageViews;
         VkFormat m_swapChainImageFormat;
