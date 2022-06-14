@@ -41,6 +41,7 @@ namespace LG
         VKPipeline& operator=(const VKPipeline&) = delete;
         static void DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo, uint32_t width, uint32_t height);
         VkRenderPass GetRenderPass() const { return m_renderPass; }
+        VkPipeline GetGraphicsPipeline() const { return m_graphicsPipeline; }
     private:
         static std::vector<char> ReadFile(const std::string& filePath);
         void CreateGraphicsPipeline(

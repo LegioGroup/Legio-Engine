@@ -48,6 +48,11 @@ namespace LG
         QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
         //------------------Logical Device---------------------
         void CreateLogicalDevice();
+        //------------------Command Pool-----------------------
+        void CreateCommandPool();
+        //------------------Command Buffer---------------------
+        void CreateCommandBuffer();
+        void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         //------------------Surface----------------------------
         void CreateSurface();
         //------------------Swap Chains------------------------
@@ -58,6 +63,7 @@ namespace LG
         VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
         void CreateSwapChain();
         void CreateFrameBuffers();
+        void CreateSyncObjects();
         //ImageViews
         void CreateImageViews();
         //--------------------Graphics Pipeline-----------------------
@@ -75,6 +81,8 @@ namespace LG
         VkInstance m_instance;
         VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
         VkDevice m_device;
+        VkCommandPool m_commandPool;
+        VkCommandBuffer m_commandBuffer;
         VkQueue m_graphicsQueue;
         VkQueue m_presentQueue;
         VkSurfaceKHR m_surface;
@@ -86,5 +94,9 @@ namespace LG
         VkFormat m_swapChainImageFormat;
         VkExtent2D m_swapChainExtent;
         VkDebugUtilsMessengerEXT m_debugMessenger;
+
+        VkSemaphore m_imageAvailableSemaphore;
+        VkSemaphore m_renderFinishedSemaphore;
+        VkFence m_inFlightFence;
     };
 } // namespace LG
