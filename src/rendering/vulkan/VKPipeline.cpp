@@ -17,11 +17,11 @@ namespace LG
 
     VKPipeline::~VKPipeline()
     {
+        vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
         vkDestroyRenderPass(m_device, m_renderPass, nullptr);
         vkDestroyShaderModule(m_device, m_fragmentShaderModule, nullptr);
         vkDestroyShaderModule(m_device, m_vertexShaderModule, nullptr);
-        vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
     }
 
     std::vector<char> VKPipeline::ReadFile(const std::string& fileName)

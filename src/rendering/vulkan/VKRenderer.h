@@ -57,6 +57,7 @@ namespace LG
         VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
         VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
         void CreateSwapChain();
+        void CreateFrameBuffers();
         //ImageViews
         void CreateImageViews();
         //--------------------Graphics Pipeline-----------------------
@@ -78,6 +79,7 @@ namespace LG
         VkQueue m_presentQueue;
         VkSurfaceKHR m_surface;
         VkSwapchainKHR m_swapChain;
+        std::vector<VkFramebuffer> m_swapChainFrameBuffers;
         std::unique_ptr<VKPipeline> m_pipeline;
         std::vector<VkImage> m_swapChainImages;
         std::vector<VkImageView> m_swapChainImageViews;

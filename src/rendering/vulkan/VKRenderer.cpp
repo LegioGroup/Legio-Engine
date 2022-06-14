@@ -119,6 +119,7 @@ namespace LG
         CreateSwapChain();
         CreateImageViews();
         CreateGraphicsPipeline();
+        CreateFrameBuffers();
     }
 
     void VKRenderer::CreateInstance()
@@ -314,6 +315,32 @@ namespace LG
         m_swapChainExtent = extent;
     }
 
+    void VKRenderer::CreateFrameBuffers()
+    {
+        m_swapChainFrameBuffers.resize(m_swapChainImageViews.size());
+
+        for(size_t i = 0; i < m_swapChainImageViews.size(); ++i)
+        {
+            VkImageView attachments[] = 
+            {
+                m_swapChainImageViews[i]
+            };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = m_pipeline->GetRenderPass();
+            framebufferInfo.attachmentCount = 1;
+            framebufferInfo.pAttachments = attachments;
+            framebufferInfo.width = m_swapChainExtent.width;
+            framebufferInfo.height = m_swapChainExtent.height;
+            framebufferInfo.layers = 1;
+
+            if (vkCreateFramebuffer(m_device, &framebufferInfo, nullptr, &m_swapChainFrameBuffers[i]) != VK_SUCCESS) {
+                throw std::runtime_error("failed to create framebuffer!");
+            }
+        }
+    }
+
     void VKRenderer::CreateImageViews()
     {
         m_swapChainImageViews.resize(m_swapChainImages.size());
@@ -383,6 +410,10 @@ namespace LG
 
     void VKRenderer::Shutdown()
     {
+        for (auto framebuffer : m_swapChainFrameBuffers) {
+            vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+        }
+
         for (auto imageView : m_swapChainImageViews)
         {
             vkDestroyImageView(m_device, imageView, nullptr);
