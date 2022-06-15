@@ -32,7 +32,7 @@ namespace LG
 
         static inline void ShutdownServices()
         {
-            m_renderer.reset();
+            m_renderer->Shutdown();
             m_input.reset();
             m_window.reset();
             m_log.reset();
