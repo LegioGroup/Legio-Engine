@@ -64,6 +64,8 @@ namespace LG
         void CreateSwapChain();
         void CreateFrameBuffers();
         void CreateSyncObjects();
+        void RecreateSwapChain();
+        void CleanupSwapChain();
         //ImageViews
         void CreateImageViews();
         //--------------------Graphics Pipeline-----------------------
@@ -99,5 +101,6 @@ namespace LG
         std::vector<VkSemaphore> m_imageAvailableSemaphores;
         std::vector<VkSemaphore> m_renderFinishedSemaphores;
         std::vector<VkFence> m_inFlightFences;
+        bool m_frameBufferResized = false;
     };
 } // namespace LG

@@ -369,6 +369,34 @@ namespace LG
         }
     }
 
+    void VKRenderer::RecreateSwapChain()
+    {
+        RendererWaitIdle();
+
+        CleanupSwapChain();
+
+        CreateSwapChain();
+        CreateGraphicsPipeline();
+        CreateImageViews();
+        CreateFrameBuffers();
+    }
+
+    void VKRenderer::CleanupSwapChain()
+    {
+        for (size_t i = 0; i < m_swapChainFrameBuffers.size(); i++) {
+            vkDestroyFramebuffer(m_device, m_swapChainFrameBuffers[i], nullptr);
+        }
+
+        m_pipeline.reset();
+
+
+        for (size_t i = 0; i < m_swapChainImageViews.size(); i++) {
+            vkDestroyImageView(m_device, m_swapChainImageViews[i], nullptr);
+        }
+
+        vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
+    }
+
     void VKRenderer::CreateImageViews()
     {
         m_swapChainImageViews.resize(m_swapChainImages.size());
@@ -504,6 +532,8 @@ namespace LG
 
     void VKRenderer::Shutdown()
     {
+        CleanupSwapChain();
+
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
             vkDestroySemaphore(m_device, m_imageAvailableSemaphores[i], nullptr);
@@ -512,16 +542,6 @@ namespace LG
         }
 
         vkDestroyCommandPool(m_device, m_commandPool, nullptr);
-        for (auto framebuffer : m_swapChainFrameBuffers)
-        {
-            vkDestroyFramebuffer(m_device, framebuffer, nullptr);
-        }
-
-        for (auto imageView : m_swapChainImageViews)
-        {
-            vkDestroyImageView(m_device, imageView, nullptr);
-        }
-        vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
         vkDestroyDevice(m_device, nullptr);
         if(enableValidationLayers)
         {
@@ -547,6 +567,7 @@ namespace LG
 
     bool VKRenderer::OnFrameBufferResizeEvent(FrameBufferResizeEvent& e)
     {
+        m_frameBufferResized = true;
         return false;
     }
 
@@ -554,13 +575,24 @@ namespace LG
     {
         vkWaitForFences(m_device, 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(m_device, m_swapChain, UINT64_MAX, m_imageAvailableSemaphores[m_currentFrame], VK_NULL_HANDLE, &imageIndex);
+        VkResult result = vkAcquireNextImageKHR(m_device, m_swapChain, UINT64_MAX, m_imageAvailableSemaphores[m_currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+        if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_frameBufferResized)
+        {
+            m_frameBufferResized = false;
+            RecreateSwapChain();
+            return;
+        }
+        else if(result != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to acquire swap chain image!");
+        }
+        vkResetFences(m_device, 1, &m_inFlightFences[m_currentFrame]);
 
         vkResetCommandBuffer(m_commandBuffers[m_currentFrame], 0);
 
         RecordCommandBuffer(m_commandBuffers[m_currentFrame], imageIndex);
 
-        vkResetFences(m_device, 1, &m_inFlightFences[m_currentFrame]);
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
