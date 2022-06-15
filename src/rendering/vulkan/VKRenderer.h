@@ -51,7 +51,7 @@ namespace LG
         //------------------Command Pool-----------------------
         void CreateCommandPool();
         //------------------Command Buffer---------------------
-        void CreateCommandBuffer();
+        void CreateCommandBuffers();
         void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         //------------------Surface----------------------------
         void CreateSurface();
@@ -78,11 +78,12 @@ namespace LG
         void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
         //-----------------------------------------------------------------
     private:
+        uint32_t m_currentFrame = 0;
         VkInstance m_instance;
         VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
         VkDevice m_device;
         VkCommandPool m_commandPool;
-        VkCommandBuffer m_commandBuffer;
+        std::vector<VkCommandBuffer> m_commandBuffers;
         VkQueue m_graphicsQueue;
         VkQueue m_presentQueue;
         VkSurfaceKHR m_surface;
@@ -95,8 +96,8 @@ namespace LG
         VkExtent2D m_swapChainExtent;
         VkDebugUtilsMessengerEXT m_debugMessenger;
 
-        VkSemaphore m_imageAvailableSemaphore;
-        VkSemaphore m_renderFinishedSemaphore;
-        VkFence m_inFlightFence;
+        std::vector<VkSemaphore> m_imageAvailableSemaphores;
+        std::vector<VkSemaphore> m_renderFinishedSemaphores;
+        std::vector<VkFence> m_inFlightFences;
     };
 } // namespace LG
