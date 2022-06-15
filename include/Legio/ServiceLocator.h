@@ -3,6 +3,7 @@
 #include <any>
 #include <Legio/application/Events/Event.h>
 #include <Legio/platform/Log.h>
+#include <Legio/editor/Editor.h>
 #include <Legio/platform/Window.h>
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Input.h>
@@ -29,9 +30,11 @@ namespace LG
         LG_PROVIDE_FN(Window, window, m_window);
         LG_PROVIDE_FN(Input, input, m_input);
         LG_PROVIDE_FN(Renderer, renderer, m_renderer);
+        LG_PROVIDE_FN(Editor, editor, m_editor);
 
         static inline void ShutdownServices()
         {
+            m_editor.reset();
             m_renderer.reset();
             m_input.reset();
             m_window.reset();
@@ -40,6 +43,7 @@ namespace LG
 
     private:
 
+        static inline std::unique_ptr<Editor> m_editor = nullptr;
         static inline std::unique_ptr<Log> m_log = nullptr;
         static inline std::unique_ptr<Window> m_window = nullptr;
         static inline std::unique_ptr<Input> m_input = nullptr;

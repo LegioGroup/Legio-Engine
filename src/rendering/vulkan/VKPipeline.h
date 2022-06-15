@@ -42,6 +42,7 @@ namespace LG
         static void DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo, uint32_t width, uint32_t height);
         VkRenderPass GetRenderPass() const { return m_renderPass; }
         VkPipeline GetGraphicsPipeline() const { return m_graphicsPipeline; }
+        VkRenderPass GetImguiRenderPass() const { return m_imguiRenderPass; }
     private:
         static std::vector<char> ReadFile(const std::string& filePath);
         void CreateGraphicsPipeline(
@@ -57,6 +58,7 @@ namespace LG
         VkPipeline m_graphicsPipeline;
         VkPipelineLayout m_pipelineLayout;
         VkRenderPass m_renderPass;
+        VkRenderPass m_imguiRenderPass;
         VkShaderModule m_vertexShaderModule;
         VkShaderModule m_fragmentShaderModule;
 
