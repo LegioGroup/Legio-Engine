@@ -1,10 +1,12 @@
 #include "rendering/vulkan/VKPipeline.h"
+#include "rendering/vulkan/VKModel.h"
+#include "rendering/vulkan/VKDevice.h"
 #include <fstream>
 
 namespace LG
 {
     VKPipeline::VKPipeline(
-        VkDevice device,
+        VKDevice* device,
         const std::string& vertFilepath,
         const std::string& fragFilepath,
         const PipelineConfigInfo& info
@@ -17,11 +19,11 @@ namespace LG
 
     VKPipeline::~VKPipeline()
     {
-        vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-        vkDestroyRenderPass(m_device, m_renderPass, nullptr);
-        vkDestroyShaderModule(m_device, m_fragmentShaderModule, nullptr);
-        vkDestroyShaderModule(m_device, m_vertexShaderModule, nullptr);
+        vkDestroyPipeline(m_device->GetDevice(), m_graphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(m_device->GetDevice(), m_pipelineLayout, nullptr);
+        vkDestroyRenderPass(m_device->GetDevice(), m_renderPass, nullptr);
+        vkDestroyShaderModule(m_device->GetDevice(), m_fragmentShaderModule, nullptr);
+        vkDestroyShaderModule(m_device->GetDevice(), m_vertexShaderModule, nullptr);
     }
 
     std::vector<char> VKPipeline::ReadFile(const std::string& fileName)
@@ -72,12 +74,16 @@ namespace LG
         shaderStages[1].pNext = nullptr;
         shaderStages[1].pSpecializationInfo = nullptr;
 
+        auto bindingDescription = VKModel::Vertex::GetBindingDescription();
+        auto attributesDescription = VKModel::Vertex::GetAttributeDescriptions();
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
-        vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
+        vertexInputInfo.vertexBindingDescriptionCount = 1;
+        vertexInputInfo.pVertexBindingDescriptions = &bindingDescription; // Optional
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributesDescription.size());
+        vertexInputInfo.pVertexAttributeDescriptions = attributesDescription.data(); // Optional
+
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -100,7 +106,7 @@ namespace LG
         pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
-        if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
+        if (vkCreatePipelineLayout(m_device->GetDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create pipeline layout!");
         } 
@@ -111,7 +117,7 @@ namespace LG
         pipelineInfo.basePipelineIndex = -1;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-        if (vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_graphicsPipeline) != VK_SUCCESS) 
+        if (vkCreateGraphicsPipelines(m_device->GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_graphicsPipeline) != VK_SUCCESS) 
         {
             throw std::runtime_error("Failed to create Graphics Pipeline");
         }
@@ -146,7 +152,7 @@ namespace LG
         renderPassInfo.subpassCount = 1;
         renderPassInfo.pSubpasses = &subpass;
 
-        if (vkCreateRenderPass(m_device, &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
+        if (vkCreateRenderPass(m_device->GetDevice(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create render pass!");
         }
@@ -249,7 +255,7 @@ namespace LG
         createInfo.codeSize = code.size();
         createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
-        if(vkCreateShaderModule(m_device, &createInfo, nullptr, shaderModule) != VK_SUCCESS)
+        if(vkCreateShaderModule(m_device->GetDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create shader module!");
         }

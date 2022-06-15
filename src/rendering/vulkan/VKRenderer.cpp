@@ -16,8 +16,18 @@ namespace LG
         auto* window = static_cast<EngineWindow*>(ServiceLocator::GetWindow());
         m_device = std::make_unique<VKDevice>();
         m_swapChain = std::make_unique<VKSwapChain>(m_device.get(), window->GetExtent());
+        m_model = std::make_shared<VKModel>(m_device.get());
         RecreateSwapChain();
         CreateCommandBuffers();
+    }
+
+    void VKRenderer::Shutdown()
+    {
+        LG_CORE_INFO("Shutting Down Vulkan Renderer!");
+
+        m_swapChain.reset();
+        m_model.reset();
+        m_device.reset();
     }
 
     void VKRenderer::RecreateSwapChain()
@@ -96,7 +106,9 @@ namespace LG
 
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_swapChain->GetGraphicsPipeline());
-        vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+        m_model->Bind(commandBuffer);
+        
+        m_model->Draw(commandBuffer);
 
         vkCmdEndRenderPass(commandBuffer);
 
@@ -104,14 +116,6 @@ namespace LG
             throw std::runtime_error("failed to record command buffer!");
         }
 
-    }
-
-    void VKRenderer::Shutdown()
-    {
-        LG_CORE_INFO("Shutting Down Vulkan Renderer!");
-
-        m_swapChain.reset();
-        m_device.reset();
     }
 
     void VKRenderer::OnEvent(Event& event)

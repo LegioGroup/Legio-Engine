@@ -204,7 +204,7 @@ namespace LG
         PipelineConfigInfo pipelineConfig = {};
         VKPipeline::DefaultPipelineConfigInfo(pipelineConfig, m_swapChainExtent.width, m_swapChainExtent.height);
         pipelineConfig.swapChainImageFormat = m_swapChainImageFormat;
-        m_pipeline = std::make_unique<VKPipeline>(m_device->GetDevice(),
+        m_pipeline = std::make_unique<VKPipeline>(m_device,
             "../../external/engine/src/rendering/vulkan/shaders/basic_shader.vert.spv",
             "../../external/engine/src/rendering/vulkan/shaders/basic_shader.frag.spv",
             pipelineConfig);

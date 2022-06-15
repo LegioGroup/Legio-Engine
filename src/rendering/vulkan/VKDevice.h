@@ -46,7 +46,7 @@ namespace LG
 
         inline SwapChainSupportDetails GetSwapChainSupportDetails() const { return QuerySwapChainSupport(m_physicalDevice); }
         inline QueueFamilyIndices FindPhysicalQueueFamilies() const { return FindQueueFamilies(m_physicalDevice); }
-
+        uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 
     private:
         void CreateInstance();

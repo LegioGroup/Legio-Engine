@@ -25,12 +25,12 @@ namespace LG
         VkFormat swapChainImageFormat;
         uint32_t subpass = 0;
     };
-
+    class VKDevice;
     class VKPipeline
     {
     public:
         VKPipeline(
-            VkDevice device,
+            VKDevice* device,
             const std::string& vertFilepath,
             const std::string& fragFilepath,
             const PipelineConfigInfo& info
@@ -53,7 +53,7 @@ namespace LG
         void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 
     private:
-        VkDevice m_device;
+        VKDevice* m_device;
         VkPipeline m_graphicsPipeline;
         VkPipelineLayout m_pipelineLayout;
         VkRenderPass m_renderPass;
