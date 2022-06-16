@@ -29,8 +29,8 @@ namespace LG
 
         auto gameObject = VKGameObject::CreateGameObject();
         gameObject.m_model = veModel_0;
-        gameObject.m_transformComponent.translation = { 0.f, 0.f, 0.7f };
-        gameObject.m_transformComponent.scale = { .6f, .6f, .6f };
+        gameObject.m_transformComponent.translation = { 0.f, 0.f, 2.5f };
+        gameObject.m_transformComponent.scale = { .5f, .5f, .5f };
 
         auto gameObject_2 = VKGameObject::CreateGameObject();
         gameObject_2.m_model = veModel_0;
