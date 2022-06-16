@@ -2,9 +2,11 @@
 #include <vulkan/vulkan.h>
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Log.h>
+#include <Legio/rendering/LGCamera.h>
 #include <optional>
 #include <memory.h>
 #include "rendering/vulkan/VKDevice.h"
+#include "rendering/vulkan/VKGameObject.h"
 #include "rendering/vulkan/VKSwapChain.h"
 #include "rendering/vulkan/VKModel.h"
 #include "rendering/vulkan/renderSystems/BasicRenderSystem.h"
@@ -35,6 +37,8 @@ namespace LG
         std::unique_ptr<VKSwapChain> m_swapChain;
         std::vector<VkCommandBuffer> m_commandBuffers;
         std::unique_ptr<BasicRenderSystem> m_renderSystem;
+        LGCamera m_camera = {};
+        VKGameObject m_cameraGameObject = VKGameObject::CreateGameObject();
         uint32_t m_currentImageIndex = 0;
         bool m_needRecreateSwapChain = false;
 

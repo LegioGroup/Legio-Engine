@@ -6,6 +6,13 @@
 
 namespace LG
 {
+    struct UBO
+    {
+        glm::mat4 model;
+        glm::mat4 view;
+        glm::mat4 proj;
+    };
+
     class VKModel
     {
     public:
@@ -29,6 +36,7 @@ namespace LG
     private:
         void CreateVertexBuffer();
         void CreateIndexBuffer();
+
         void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer destBuffer, VkDeviceSize size);
         inline bool HasIndices() { return m_inidices.size() > 0; }
