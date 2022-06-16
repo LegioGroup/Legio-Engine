@@ -13,17 +13,14 @@ namespace LG
     )
         : m_device(device)
     {
-        CreateRenderPass(info);
         CreateGraphicsPipeline(vertFilepath, fragFilepath, info);
     }
 
     VKPipeline::~VKPipeline()
     {
-        vkDestroyPipeline(m_device->GetDevice(), m_graphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(m_device->GetDevice(), m_pipelineLayout, nullptr);
-        vkDestroyRenderPass(m_device->GetDevice(), m_renderPass, nullptr);
         vkDestroyShaderModule(m_device->GetDevice(), m_fragmentShaderModule, nullptr);
         vkDestroyShaderModule(m_device->GetDevice(), m_vertexShaderModule, nullptr);
+        vkDestroyPipeline(m_device->GetDevice(), m_graphicsPipeline, nullptr);
     }
 
     std::vector<char> VKPipeline::ReadFile(const std::string& fileName)
@@ -52,6 +49,8 @@ namespace LG
         const PipelineConfigInfo& info
     )
     {
+        assert(info.pipelineLayout != VK_NULL_HANDLE && "Cannot Create Graphics Pipeline: no pipelineLayout Provided in configInfo");
+        assert(info.renderPass != VK_NULL_HANDLE && "Cannot Create Graphics Pipeline: no renderPass Provided in configInfo");
 
         auto vertShaderCode = ReadFile(vertFilepath);
         auto fragShaderCode = ReadFile(fragFilepath);
@@ -96,23 +95,10 @@ namespace LG
         pipelineInfo.pMultisampleState = &info.multisampleInfo;
         pipelineInfo.pColorBlendState = &info.colorBlending;
         pipelineInfo.pDepthStencilState = &info.depthStencilInfo;
-        pipelineInfo.pDynamicState = nullptr;
+        pipelineInfo.pDynamicState = &info.dynamicState;
 
-
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0; // Optional
-        pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
-        pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-        pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
-
-        if (vkCreatePipelineLayout(m_device->GetDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create pipeline layout!");
-        } 
-
-        pipelineInfo.layout = m_pipelineLayout;
-        pipelineInfo.renderPass = m_renderPass;
+        pipelineInfo.layout = info.pipelineLayout;
+        pipelineInfo.renderPass = info.renderPass;
         pipelineInfo.subpass = info.subpass;
         pipelineInfo.basePipelineIndex = -1;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
@@ -123,66 +109,19 @@ namespace LG
         }
     }
 
-    void VKPipeline::CreateRenderPass(const PipelineConfigInfo& info)
-    {
-        VkAttachmentDescription colorAttachment{};
-        colorAttachment.format = info.swapChainImageFormat;
-        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-        VkAttachmentReference colorAttachmentRef{};
-        colorAttachmentRef.attachment = 0;
-        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkSubpassDescription subpass{};
-        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-
-        subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &colorAttachmentRef;
-
-        VkRenderPassCreateInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = 1;
-        renderPassInfo.pAttachments = &colorAttachment;
-        renderPassInfo.subpassCount = 1;
-        renderPassInfo.pSubpasses = &subpass;
-
-        if (vkCreateRenderPass(m_device->GetDevice(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create render pass!");
-        }
-    }
-
-    void VKPipeline::DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo, uint32_t width, uint32_t height)
+    void VKPipeline::DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
     {
         // 1 - Input Assembly
         configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
 
-        // 2 = Viewport
-        configInfo.viewport.x = 0.0f;
-        configInfo.viewport.y = 0.0f;
-        configInfo.viewport.width = static_cast<float>(width);
-        configInfo.viewport.height = static_cast<float>(height);
-        configInfo.viewport.minDepth = 0.0f;
-        configInfo.viewport.maxDepth = 1.0f;
-    
-        // 3 - Scissors
-        configInfo.scissors.offset = { 0,0 };
-        configInfo.scissors.extent = { width, height };
-
         //4 - Combine Viewport and Scissors
         configInfo.viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         configInfo.viewportState.viewportCount = 1;
-        configInfo.viewportState.pViewports = &configInfo.viewport;
+        configInfo.viewportState.pViewports = nullptr;
         configInfo.viewportState.scissorCount = 1;
-        configInfo.viewportState.pScissors = &configInfo.scissors;
+        configInfo.viewportState.pScissors = nullptr;
 
         //5 - Rasterizer
         configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -238,14 +177,15 @@ namespace LG
         configInfo.colorBlending.blendConstants[2] = 0.0f; // Optional
         configInfo.colorBlending.blendConstants[3] = 0.0f; // Optional
 
-        std::vector<VkDynamicState> dynamicStates = {
+        configInfo.dyamicStateEnables = {
             VK_DYNAMIC_STATE_VIEWPORT,
-            VK_DYNAMIC_STATE_LINE_WIDTH
+            VK_DYNAMIC_STATE_SCISSOR
         };
 
         configInfo.dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        configInfo.dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-        configInfo.dynamicState.pDynamicStates = dynamicStates.data();
+        configInfo.dynamicState.dynamicStateCount = static_cast<uint32_t>(configInfo.dyamicStateEnables.size());
+        configInfo.dynamicState.pDynamicStates = configInfo.dyamicStateEnables.data();
+        configInfo.dynamicState.flags = 0;
     }
     
     void VKPipeline::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
@@ -261,4 +201,8 @@ namespace LG
         }
     }
 
+    void VKPipeline::Bind(VkCommandBuffer commandBuffer)
+    {
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
+    }
 } // namespace LG

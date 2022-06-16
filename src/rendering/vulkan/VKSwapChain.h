@@ -18,12 +18,11 @@ namespace LG
         void operator=(const VKSwapChain&) = delete;
 
         VkFramebuffer GetFrameBuffer(int index) { return m_swapChainFrameBuffers[index]; }
-        VkRenderPass GetRenderPass() { return m_pipeline->GetRenderPass(); }
+        VkRenderPass GetRenderPass() { return m_renderPass; }
         VkImageView GetImageView(int index) { return m_swapChainImageViews[index]; }
         size_t ImageCount() { return m_swapChainImages.size(); }
         VkFormat GetSwapChainImageFormat() { return m_swapChainImageFormat; }
         VkExtent2D GetSwapChainExtent() { return m_swapChainExtent; }
-        VkPipeline GetGraphicsPipeline() const { return m_pipeline->GetGraphicsPipeline(); }
 
         uint32_t Width() { return m_swapChainExtent.width; }
         uint32_t Height() { return m_swapChainExtent.height; }
@@ -39,7 +38,7 @@ namespace LG
         void Init();
         void CreateSwapChain();
         void CreateImageViews();
-        void CreateGraphicsPipeline();
+        void CreateRenderPass();
         void CreateFrameBuffers();
         void CreateSyncObjects();
 
@@ -56,9 +55,9 @@ namespace LG
         VkFormat m_swapChainImageFormat;
         VkExtent2D m_swapChainExtent;
         std::vector<VkFramebuffer> m_swapChainFrameBuffers;
-        std::unique_ptr<VKPipeline> m_pipeline;
         std::vector<VkImage> m_swapChainImages;
         std::vector<VkImageView> m_swapChainImageViews;
+        VkRenderPass m_renderPass;
 
         std::vector<VkSemaphore> m_imageAvailableSemaphores;
         std::vector<VkSemaphore> m_renderFinishedSemaphores;

@@ -10,19 +10,19 @@ namespace LG
         PipelineConfigInfo(const PipelineConfigInfo&) = delete;
         PipelineConfigInfo& operator=(const PipelineConfigInfo&) = delete;
 
-        VkViewport viewport; //Transformation between pipeline's output and target image
-        VkRect2D scissors; //Pixels outside this rectangle will be discarded
         VkPipelineViewportStateCreateInfo viewportState;
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo rasterizationInfo;
         VkPipelineMultisampleStateCreateInfo multisampleInfo;
         VkPipelineColorBlendAttachmentState colorBlendAttachment;
         VkPipelineColorBlendStateCreateInfo colorBlending;
+
         VkPipelineDynamicStateCreateInfo dynamicState;
+        std::vector<VkDynamicState> dyamicStateEnables;
+        
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
         VkPipelineLayout pipelineLayout = nullptr;
         VkRenderPass renderPass = nullptr;
-        VkFormat swapChainImageFormat;
         uint32_t subpass = 0;
     };
     class VKDevice;
@@ -39,9 +39,9 @@ namespace LG
         ~VKPipeline();
         VKPipeline(const VKPipeline&) = delete;
         VKPipeline& operator=(const VKPipeline&) = delete;
-        static void DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo, uint32_t width, uint32_t height);
-        VkRenderPass GetRenderPass() const { return m_renderPass; }
+        static void DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
         VkPipeline GetGraphicsPipeline() const { return m_graphicsPipeline; }
+        void Bind(VkCommandBuffer commandBuffer);
     private:
         static std::vector<char> ReadFile(const std::string& filePath);
         void CreateGraphicsPipeline(
@@ -49,14 +49,11 @@ namespace LG
             const std::string& fragFilepath,
             const PipelineConfigInfo& info
         );
-        void CreateRenderPass(const PipelineConfigInfo& info);
         void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 
     private:
         VKDevice* m_device;
         VkPipeline m_graphicsPipeline;
-        VkPipelineLayout m_pipelineLayout;
-        VkRenderPass m_renderPass;
         VkShaderModule m_vertexShaderModule;
         VkShaderModule m_fragmentShaderModule;
 

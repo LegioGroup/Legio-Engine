@@ -7,6 +7,7 @@
 #include "rendering/vulkan/VKDevice.h"
 #include "rendering/vulkan/VKSwapChain.h"
 #include "rendering/vulkan/VKModel.h"
+#include "rendering/vulkan/renderSystems/BasicRenderSystem.h"
 namespace LG
 {
     class VKRenderer : public Renderer
@@ -32,8 +33,8 @@ namespace LG
     private:
         std::unique_ptr<VKDevice> m_device;
         std::unique_ptr<VKSwapChain> m_swapChain;
-        std::shared_ptr<VKModel> m_model;
         std::vector<VkCommandBuffer> m_commandBuffers;
+        std::unique_ptr<BasicRenderSystem> m_renderSystem;
         uint32_t m_currentImageIndex = 0;
         bool m_needRecreateSwapChain = false;
 

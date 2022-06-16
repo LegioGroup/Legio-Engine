@@ -102,7 +102,7 @@ namespace LG
     {
         CreateSwapChain();
         CreateImageViews();
-        CreateGraphicsPipeline();
+        CreateRenderPass();
         CreateFrameBuffers();
         CreateSyncObjects();
     }
@@ -198,16 +198,40 @@ namespace LG
             }
         }
     }
-
-    void VKSwapChain::CreateGraphicsPipeline()
+    
+    void VKSwapChain::CreateRenderPass()
     {
-        PipelineConfigInfo pipelineConfig = {};
-        VKPipeline::DefaultPipelineConfigInfo(pipelineConfig, m_swapChainExtent.width, m_swapChainExtent.height);
-        pipelineConfig.swapChainImageFormat = m_swapChainImageFormat;
-        m_pipeline = std::make_unique<VKPipeline>(m_device,
-            "../../external/engine/src/rendering/vulkan/shaders/basic_shader.vert.spv",
-            "../../external/engine/src/rendering/vulkan/shaders/basic_shader.frag.spv",
-            pipelineConfig);
+        VkAttachmentDescription colorAttachment{};
+        colorAttachment.format = GetSwapChainImageFormat();
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+        VkAttachmentReference colorAttachmentRef{};
+        colorAttachmentRef.attachment = 0;
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass{};
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &colorAttachmentRef;
+
+        VkRenderPassCreateInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        renderPassInfo.attachmentCount = 1;
+        renderPassInfo.pAttachments = &colorAttachment;
+        renderPassInfo.subpassCount = 1;
+        renderPassInfo.pSubpasses = &subpass;
+
+        if (vkCreateRenderPass(m_device->GetDevice(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create render pass!");
+        }
     }
 
     void VKSwapChain::CreateFrameBuffers()
@@ -223,7 +247,7 @@ namespace LG
 
             VkFramebufferCreateInfo framebufferInfo{};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = m_pipeline->GetRenderPass();
+            framebufferInfo.renderPass = m_renderPass;
             framebufferInfo.attachmentCount = 1;
             framebufferInfo.pAttachments = attachments;
             framebufferInfo.width = m_swapChainExtent.width;
@@ -267,7 +291,7 @@ namespace LG
             vkDestroyFramebuffer(m_device->GetDevice(), m_swapChainFrameBuffers[i], nullptr);
         }
 
-        m_pipeline.reset();
+        vkDestroyRenderPass(m_device->GetDevice(), m_renderPass, nullptr);
 
         for (size_t i = 0; i < m_swapChainImageViews.size(); i++) {
             vkDestroyImageView(m_device->GetDevice(), m_swapChainImageViews[i], nullptr);

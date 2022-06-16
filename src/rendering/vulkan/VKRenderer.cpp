@@ -16,8 +16,8 @@ namespace LG
         auto* window = static_cast<EngineWindow*>(ServiceLocator::GetWindow());
         m_device = std::make_unique<VKDevice>();
         m_swapChain = std::make_unique<VKSwapChain>(m_device.get(), window->GetExtent());
-        m_model = std::make_shared<VKModel>(m_device.get());
         RecreateSwapChain();
+        m_renderSystem = std::make_unique<BasicRenderSystem>(m_device.get(), m_swapChain->GetRenderPass(), new LGCamera());
         CreateCommandBuffers();
     }
 
@@ -26,7 +26,7 @@ namespace LG
         LG_CORE_INFO("Shutting Down Vulkan Renderer!");
 
         m_swapChain.reset();
-        m_model.reset();
+        m_renderSystem.reset();
         m_device.reset();
     }
 
@@ -104,11 +104,20 @@ namespace LG
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues = &clearColor;
 
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(m_swapChain->GetSwapChainExtent().width);
+        viewport.height = static_cast<float>(m_swapChain->GetSwapChainExtent().height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        VkRect2D scissor{ {0,0}, m_swapChain->GetSwapChainExtent() };
+        vkCmdSetViewport(m_commandBuffers[imageIndex], 0, 1, &viewport);
+        vkCmdSetScissor(m_commandBuffers[imageIndex], 0, 1, &scissor);
+
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_swapChain->GetGraphicsPipeline());
-        m_model->Bind(commandBuffer);
-        
-        m_model->Draw(commandBuffer);
+        m_renderSystem->Render(commandBuffer);
 
         vkCmdEndRenderPass(commandBuffer);
 
