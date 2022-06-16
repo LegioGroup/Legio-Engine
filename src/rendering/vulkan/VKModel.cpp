@@ -33,6 +33,10 @@ namespace LG
         : m_device(device)
     {
         CreateVertexBuffer();
+        if(HasIndices())
+        {
+            CreateIndexBuffer();
+        }
     }
 
     VKModel::~VKModel()
@@ -40,7 +44,12 @@ namespace LG
         vkDestroyBuffer(m_device->GetDevice(), m_vertexBuffer, nullptr);
         vkFreeMemory(m_device->GetDevice(), m_vertexBufferMemory, nullptr);
 
-    }
+        if(HasIndices())
+        {
+            vkDestroyBuffer(m_device->GetDevice(), m_indexBuffer, nullptr);
+            vkFreeMemory(m_device->GetDevice(), m_indexBufferMemory, nullptr);
+        }
+     }
 
     void VKModel::CreateVertexBuffer()
     {
@@ -62,6 +71,27 @@ namespace LG
         vkFreeMemory(m_device->GetDevice(), stagingBufferMemory, nullptr);
     }
 
+    void VKModel::CreateIndexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(m_inidices[0]) * m_inidices.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(m_device->GetDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, m_inidices.data(), (size_t) bufferSize);
+        vkUnmapMemory(m_device->GetDevice(), stagingBufferMemory);
+
+        CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_indexBuffer, m_indexBufferMemory);
+
+        CopyBuffer(stagingBuffer, m_indexBuffer, bufferSize);
+
+        vkDestroyBuffer(m_device->GetDevice(), stagingBuffer, nullptr);
+        vkFreeMemory(m_device->GetDevice(), stagingBufferMemory, nullptr);
+    }
+
     void VKModel::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
     {
         VkBufferCreateInfo bufferInfo{};
@@ -72,7 +102,7 @@ namespace LG
 
         if (vkCreateBuffer(m_device->GetDevice(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
         {
-            throw std::runtime_error("failed to create vertex buffer!");
+            throw std::runtime_error("failed to create buffer!");
         }
 
         VkMemoryRequirements memRequirements;
@@ -85,7 +115,7 @@ namespace LG
 
         if (vkAllocateMemory(m_device->GetDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
         {
-            throw std::runtime_error("failed to allocate vertex buffer memory!");
+            throw std::runtime_error("failed to allocate buffer memory!");
         }
 
         vkBindBufferMemory(m_device->GetDevice(), buffer, bufferMemory, 0);
@@ -131,10 +161,22 @@ namespace LG
         VkBuffer vertexBuffers[] = { m_vertexBuffer };
         VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+        if(HasIndices())
+        {
+            vkCmdBindIndexBuffer(commandBuffer, m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+        }
     }
 
     void VKModel::Draw(VkCommandBuffer commandBuffer)
     {
-        vkCmdDraw(commandBuffer, static_cast<uint32_t>(m_vertices.size()), 1, 0, 0);
+        if(HasIndices())
+        {
+            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_inidices.size()), 1, 0, 0, 0);
+        }
+        else
+        {
+            vkCmdDraw(commandBuffer, static_cast<uint32_t>(m_vertices.size()), 1, 0, 0);
+        }
     }
 } // namespace LG

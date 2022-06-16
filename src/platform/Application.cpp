@@ -50,7 +50,7 @@ namespace LG
     void Application::InitServices()
     {
         ServiceLocator::Provide(new Log());
-        ServiceLocator::Provide(new EngineWindow({800, 600, m_appName.c_str()}));
+        ServiceLocator::Provide(new EngineWindow({1600, 1200, m_appName.c_str()}));
         ServiceLocator::Provide(new WindowsInput());
         ServiceLocator::Provide(new VKRenderer());
 

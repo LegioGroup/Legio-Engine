@@ -28,20 +28,29 @@ namespace LG
 
     private:
         void CreateVertexBuffer();
+        void CreateIndexBuffer();
         void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer destBuffer, VkDeviceSize size);
-
+        inline bool HasIndices() { return m_inidices.size() > 0; }
     private:
         VKDevice* m_device;
+
         VkBuffer m_vertexBuffer;
         VkDeviceMemory m_vertexBufferMemory;
 
+        VkBuffer m_indexBuffer;
+        VkDeviceMemory m_indexBufferMemory;
+
         const std::vector<Vertex> m_vertices = {
-            {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
         };
 
+        const std::vector<uint16_t> m_inidices = {
+            0, 1, 2, 2, 3, 0
+        };
 
     };
 } // namespace LG
