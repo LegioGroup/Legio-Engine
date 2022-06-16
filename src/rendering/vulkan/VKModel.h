@@ -28,7 +28,9 @@ namespace LG
 
     private:
         void CreateVertexBuffer();
-    
+        void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+        void CopyBuffer(VkBuffer srcBuffer, VkBuffer destBuffer, VkDeviceSize size);
+
     private:
         VKDevice* m_device;
         VkBuffer m_vertexBuffer;
