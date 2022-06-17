@@ -7,7 +7,7 @@
 #include <Legio/platform/Log.h>
 #include "platform/EngineWindow.h"
 #include "platform/WindowsInput.h"
-#include "rendering/vulkan/VKRenderer.h"
+#include "rendering/vulkan/Vulkan_Renderer.h"
 namespace LG
 {
     void VKRenderer::Init(RendererSettings settings)
@@ -20,7 +20,7 @@ namespace LG
 
         m_camera.SetViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
 
-        m_renderSystem = std::make_unique<BasicRenderSystem>(m_device.get(), m_swapChain->GetRenderPass(), &m_camera);
+        m_renderSystem = std::make_unique<GeometryBasicRenderSystem>(m_device.get(), m_swapChain->GetRenderPass(), &m_camera);
         CreateCommandBuffers();
     }
 

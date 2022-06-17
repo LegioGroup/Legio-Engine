@@ -1,5 +1,5 @@
 #pragma once
-#include "rendering/vulkan/VKModel.h"
+#include "rendering/vulkan/Vulkan_Model.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 

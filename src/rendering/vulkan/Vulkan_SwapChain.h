@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rendering/vulkan/VKDevice.h"
-#include "rendering/vulkan/VKPipeline.h"
+#include "rendering/vulkan/Vulkan_Device.h"
+#include "rendering/vulkan/Vulkan_Pipeline.h"
 #include <memory>
 #include <functional>
 

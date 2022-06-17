@@ -1,4 +1,4 @@
-#include "rendering/vulkan/renderSystems/BasicRenderSystem.h"
+#include "rendering/vulkan/renderSystems/Vulkan_GeometryRenderSystem.h"
 
 namespace LG
 {
@@ -8,7 +8,7 @@ namespace LG
         alignas(16) glm::vec3 color;
     };
 
-    BasicRenderSystem::BasicRenderSystem(VKDevice* device, VkRenderPass renderPass, LGCamera* camera)
+    GeometryBasicRenderSystem::GeometryBasicRenderSystem(VKDevice* device, VkRenderPass renderPass, LGCamera* camera)
         : m_device(device)
         , m_camera(camera)
     {
@@ -17,13 +17,13 @@ namespace LG
         LoadGameObjects();
     }
 
-    BasicRenderSystem::~BasicRenderSystem()
+    GeometryBasicRenderSystem::~GeometryBasicRenderSystem()
     {
         vkDestroyPipelineLayout(m_device->GetDevice(), m_pipelineLayout, nullptr);
         m_pipeline.reset();
     }
 
-    void BasicRenderSystem::LoadGameObjects()
+    void GeometryBasicRenderSystem::LoadGameObjects()
     {
         std::shared_ptr<VKModel> veModel_0 = std::make_shared<VKModel>(m_device);
 
@@ -41,7 +41,7 @@ namespace LG
         m_gameObjects.push_back(std::move(gameObject_2));
     } 
 
-    void BasicRenderSystem::CreatePipelineLayout()
+    void GeometryBasicRenderSystem::CreatePipelineLayout()
     {
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -61,7 +61,7 @@ namespace LG
         } 
     }
 
-    void BasicRenderSystem::CreatePipeline(VkRenderPass renderPass)
+    void GeometryBasicRenderSystem::CreatePipeline(VkRenderPass renderPass)
     {
         PipelineConfigInfo pipelineConfig = {};
         VKPipeline::DefaultPipelineConfigInfo(pipelineConfig);
@@ -75,7 +75,7 @@ namespace LG
             pipelineConfig);
     }
 
-    void BasicRenderSystem::Render(VkCommandBuffer commandBuffer)
+    void GeometryBasicRenderSystem::Render(VkCommandBuffer commandBuffer)
     {
         m_pipeline->Bind(commandBuffer);
         auto projection = m_camera->GetProjection() * m_camera->GetView();

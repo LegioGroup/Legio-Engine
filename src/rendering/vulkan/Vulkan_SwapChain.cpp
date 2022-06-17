@@ -1,4 +1,4 @@
-#include "rendering/vulkan/VKSwapChain.h"
+#include "rendering/vulkan/Vulkan_SwapChain.h"
 #include <Legio/ServiceLocator.h>
 #include "platform/EngineWindow.h"
 namespace LG

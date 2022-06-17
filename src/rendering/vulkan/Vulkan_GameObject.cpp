@@ -1,4 +1,4 @@
-#include "rendering/vulkan/VKGameObject.h"
+#include "rendering/vulkan/Vulkan_GameObject.h"
 
 namespace LG
 {

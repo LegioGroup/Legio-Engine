@@ -1,20 +1,20 @@
 #pragma once
 
-#include "rendering/vulkan/VKPipeline.h"
-#include "rendering/vulkan/VKdevice.h"
-#include "rendering/vulkan/VKGameObject.h"
+#include "rendering/vulkan/Vulkan_Pipeline.h"
+#include "rendering/vulkan/Vulkan_Device.h"
+#include "rendering/vulkan/Vulkan_GameObject.h"
 #include "Legio/rendering/LGCamera.h"
 #include <glm/gtc/matrix_transform.hpp>
 namespace LG
 {
 
-    class BasicRenderSystem
+    class GeometryBasicRenderSystem
     {
     public:
-        BasicRenderSystem(VKDevice* device, VkRenderPass renderPass, LGCamera* camera);
-        ~BasicRenderSystem();
-        BasicRenderSystem(const BasicRenderSystem&) = delete;
-        BasicRenderSystem& operator=(const BasicRenderSystem&) = delete;
+        GeometryBasicRenderSystem(VKDevice* device, VkRenderPass renderPass, LGCamera* camera);
+        ~GeometryBasicRenderSystem();
+        GeometryBasicRenderSystem(const GeometryBasicRenderSystem&) = delete;
+        GeometryBasicRenderSystem& operator=(const GeometryBasicRenderSystem&) = delete;
         void Render(VkCommandBuffer commandBuffer);
     private:
         void LoadGameObjects(); 

@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <array>
 #include <vector>
-#include "rendering/vulkan/VKDevice.h"
+#include "rendering/vulkan/Vulkan_Device.h"
 
 namespace LG
 {

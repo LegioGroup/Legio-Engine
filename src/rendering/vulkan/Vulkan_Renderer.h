@@ -5,11 +5,11 @@
 #include <Legio/rendering/LGCamera.h>
 #include <optional>
 #include <memory.h>
-#include "rendering/vulkan/VKDevice.h"
-#include "rendering/vulkan/VKGameObject.h"
-#include "rendering/vulkan/VKSwapChain.h"
-#include "rendering/vulkan/VKModel.h"
-#include "rendering/vulkan/renderSystems/BasicRenderSystem.h"
+#include "rendering/vulkan/Vulkan_Device.h"
+#include "rendering/vulkan/Vulkan_GameObject.h"
+#include "rendering/vulkan/Vulkan_SwapChain.h"
+#include "rendering/vulkan/Vulkan_Model.h"
+#include "rendering/vulkan/renderSystems/Vulkan_GeometryRenderSystem.h"
 namespace LG
 {
     class VKRenderer : public Renderer
@@ -36,7 +36,7 @@ namespace LG
         std::unique_ptr<VKDevice> m_device;
         std::unique_ptr<VKSwapChain> m_swapChain;
         std::vector<VkCommandBuffer> m_commandBuffers;
-        std::unique_ptr<BasicRenderSystem> m_renderSystem;
+        std::unique_ptr<GeometryBasicRenderSystem> m_renderSystem;
         LGCamera m_camera = {};
         VKGameObject m_cameraGameObject = VKGameObject::CreateGameObject();
         uint32_t m_currentImageIndex = 0;

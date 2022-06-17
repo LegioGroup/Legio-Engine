@@ -1,4 +1,4 @@
-#include "rendering/vulkan/VKModel.h"
+#include "rendering/vulkan/Vulkan_Model.h"
 #include <stdexcept>
 
 namespace LG
