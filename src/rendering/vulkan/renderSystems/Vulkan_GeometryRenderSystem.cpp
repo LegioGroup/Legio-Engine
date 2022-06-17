@@ -12,9 +12,9 @@ namespace LG
         : m_device(device)
         , m_camera(camera)
     {
+        LoadGameObjects();
         CreatePipelineLayout();
         CreatePipeline(renderPass);
-        LoadGameObjects();
     }
 
     GeometryBasicRenderSystem::~GeometryBasicRenderSystem()
@@ -25,15 +25,19 @@ namespace LG
 
     void GeometryBasicRenderSystem::LoadGameObjects()
     {
+        //Dangerous use of Shared ptr (if we don't assign a model and a texture to a gameobject we'll get validation errors)
         std::shared_ptr<VKModel> veModel_0 = std::make_shared<VKModel>(m_device);
+        std::shared_ptr<VKTexture> veTexture_0 = std::make_shared<VKTexture>(m_device, "../../external/engine/models/texture.jpg");
 
         auto gameObject = VKGameObject::CreateGameObject();
         gameObject.m_model = veModel_0;
+        gameObject.m_texture = veTexture_0;
         gameObject.m_transformComponent.translation = { 0.f, 0.f, 2.5f };
         gameObject.m_transformComponent.scale = { .5f, .5f, .5f };
 
         auto gameObject_2 = VKGameObject::CreateGameObject();
         gameObject_2.m_model = veModel_0;
+        //gameObject_2.m_texture = veTexture_0;
         gameObject_2.m_transformComponent.translation = { 0.f, 0.3f, 0.5f };
         gameObject_2.m_transformComponent.scale = { .4f, .4f, .4f };
 

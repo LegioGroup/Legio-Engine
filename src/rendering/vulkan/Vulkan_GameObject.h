@@ -1,5 +1,6 @@
 #pragma once
 #include "rendering/vulkan/Vulkan_Model.h"
+#include "rendering/vulkan/Vulkan_Texture.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 
@@ -34,8 +35,8 @@ namespace LG
         id_t GetId() { return m_id; };
 
     public:
-    
         std::shared_ptr<VKModel> m_model;
+        std::shared_ptr<VKTexture> m_texture;
         glm::vec3 m_color{};
         TransformComponent m_transformComponent{};
 
