@@ -5,6 +5,8 @@
 #include <functional>
 #include <Legio/ServiceLocator.h>
 #include <Legio/platform/Log.h>
+
+#include "rendering/vulkan/Vulkan_Implementation.h"
 #include "platform/EngineWindow.h"
 #include "platform/WindowsInput.h"
 #include "rendering/vulkan/Vulkan_Renderer.h"

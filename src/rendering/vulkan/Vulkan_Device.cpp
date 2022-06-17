@@ -1,3 +1,4 @@
+#include "rendering/vulkan/Vulkan_Implementation.h"
 #include "rendering/vulkan/Vulkan_Device.h"
 #include "platform/EngineWindow.h"
 #include <set> 
@@ -54,6 +55,8 @@ namespace LG
 
     VKDevice::VKDevice()
     {
+        VulkanUtils::Globals::device = this;
+
         CreateInstance();
         SetupDebugMessenger();
         CreateSurface();
