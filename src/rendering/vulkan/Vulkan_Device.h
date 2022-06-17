@@ -43,6 +43,12 @@ namespace LG
         inline VkSurfaceKHR GetSurface() const { return m_surface; }
         inline VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
         inline VkQueue GetPresentQueue() const { return m_presentQueue; }
+        inline VkPhysicalDeviceProperties GetPhysicalDeviceProperties()
+        {
+            VkPhysicalDeviceProperties properties{};
+            vkGetPhysicalDeviceProperties(m_physicalDevice, &properties);
+            return properties;
+        };
 
         inline SwapChainSupportDetails GetSwapChainSupportDetails() const { return QuerySwapChainSupport(m_physicalDevice); }
         inline QueueFamilyIndices FindPhysicalQueueFamilies() const { return FindQueueFamilies(m_physicalDevice); }

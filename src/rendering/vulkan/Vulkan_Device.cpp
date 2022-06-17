@@ -210,6 +210,7 @@ namespace LG
         }
 
         VkPhysicalDeviceFeatures deviceFeatures{};
+        deviceFeatures.samplerAnisotropy = VK_TRUE;
         VkDeviceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
@@ -348,15 +349,18 @@ namespace LG
     {
         QueueFamilyIndices indices = FindQueueFamilies(device);
         bool extensionSupported = CheckDeviceExtensionSupport(device);
-
         bool swapChainAdequate = false;
+
+        VkPhysicalDeviceFeatures supportedFeatures;
+        vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+
         if (extensionSupported)
         {
             SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
             swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         }
 
-        return indices.IsComplete() && extensionSupported && swapChainAdequate;
+        return indices.IsComplete() && extensionSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
     }
 
     bool VKDevice::CheckDeviceExtensionSupport(VkPhysicalDevice device)
