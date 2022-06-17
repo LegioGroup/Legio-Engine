@@ -28,6 +28,8 @@ target_include_directories(${PROJECT_NAME}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:external/tinyobj>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/tinyobj>
+        $<INSTALL_INTERFACE:external/stb_image>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/stb_image>
         glm
         imgui
         spdlog/include
