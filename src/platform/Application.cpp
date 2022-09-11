@@ -7,7 +7,7 @@
 
 #include "WindowsInput.h"
 //#include "rendering/vulkan/Vulkan_Renderer.h"
-#include "rendering/OpenGl/OpenGL_Renderer.h"
+#include "rendering/OpenGL/OpenGL_Renderer.h"
 #include "platform/EngineWindow.h"
 namespace LG
 {

@@ -8,10 +8,11 @@ namespace LG
 {
     class OpenGLRenderer : public Renderer
     {
-        virtual void Init(RendererSettings settings){};
-        virtual void Shutdown() override {};
-        virtual void RenderFrame() override {};
-        virtual void RendererWaitIdle() override {};
-        virtual void OnEvent(Event& event) override {};
+    public:
+        virtual void Init(RendererSettings settings) override;
+        virtual void Shutdown() override;
+        virtual void RenderFrame() override;
+        virtual void RendererWaitIdle() override;
+        virtual void OnEvent(Event& event) override;
     };
 } //namespace LG
