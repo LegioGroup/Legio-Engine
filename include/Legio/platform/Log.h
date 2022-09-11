@@ -20,7 +20,7 @@ namespace LG
     };
 } //namespace LG
 
-#ifndef NDEBUG
+#ifdef LG_DEBUG
     #define LG_CORE_CRITICAL(...)   ::LG::Log::GetCoreLogger()->critical(__VA_ARGS__)
     #define LG_CORE_ERROR(...)      ::LG::Log::GetCoreLogger()->error(__VA_ARGS__)
     #define LG_CORE_WARN(...)       ::LG::Log::GetCoreLogger()->warn(__VA_ARGS__)

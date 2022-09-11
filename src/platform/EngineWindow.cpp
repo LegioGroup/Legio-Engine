@@ -28,10 +28,22 @@ namespace LG
         {
             LG_CORE_CRITICAL("Couldn't initialize GLFW!");
         }
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        // Set all the required options for GLFW
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        //Vulkan
+        //glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        
+        //OpenGl
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         m_window = glfwCreateWindow(m_data.m_width, m_data.m_height, m_data.m_name, nullptr, nullptr);
+
+        //OpenGl
+        glfwMakeContextCurrent(m_window);
+
         glfwSetWindowUserPointer(m_window, &m_data);
         glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
         {
@@ -127,17 +139,22 @@ namespace LG
         return glfwWindowShouldClose(m_window);
     }
 
-     void EngineWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
-     {
-         if(glfwCreateWindowSurface(instance, m_window, nullptr, surface) != VK_SUCCESS)
-         {
-             LG_CORE_CRITICAL("Failed to create Window Surface");
-             throw std::runtime_error("Failed to create Window Surface");
-         }
-     }
-
-    VkExtent2D EngineWindow::GetExtent() const
+    void EngineWindow::SwapWindowBuffers()
     {
-        return {static_cast<uint32_t>(m_data.m_width), static_cast<uint32_t>(m_data.m_height)};
+        glfwSwapBuffers(m_window);
     }
+
+    //void EngineWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+    //{
+    //    if(glfwCreateWindowSurface(instance, m_window, nullptr, surface) != VK_SUCCESS)
+    //    {
+    //        LG_CORE_CRITICAL("Failed to create Window Surface");
+    //        throw std::runtime_error("Failed to create Window Surface");
+    //    }
+    //}
+
+    //VkExtent2D EngineWindow::GetExtent() const
+    //{
+    //    return {static_cast<uint32_t>(m_data.m_width), static_cast<uint32_t>(m_data.m_height)};
+    //}
 } //namespace LG

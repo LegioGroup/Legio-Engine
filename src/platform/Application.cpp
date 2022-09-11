@@ -43,6 +43,7 @@ namespace LG
 
             //Draw Frame
             LG::ServiceLocator::GetRenderer()->RenderFrame();
+            LG::ServiceLocator::GetWindow()->SwapWindowBuffers();
         }
 
         LG::ServiceLocator::GetRenderer()->RendererWaitIdle();

@@ -1,7 +1,8 @@
 #pragma once
 #include <Legio/platform/Window.h>
 
-#define GLFW_INCLUDE_VULKAN
+//Vulkan
+//#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 namespace LG
 {
@@ -12,13 +13,17 @@ namespace LG
         virtual ~EngineWindow();
         virtual void Init() override;
         virtual bool Update() override;
+        virtual int GetWidth() const override { return m_data.m_width;  }
+        virtual int GetHeight() const override { return m_data.m_height; }
+        virtual void SwapWindowBuffers() override;
         static inline const char** GetRequiredInstanceExtension(uint32_t* extensionCount) {return glfwGetRequiredInstanceExtensions(extensionCount); }
+
 
         inline GLFWwindow* GetNativeWindow() const { return m_window; }
         virtual void SetEventCallback(const EventCallbackFn& callback) { m_data.m_eventCallbackFn = callback; };
         //Vulkan Specific
-        void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
-        VkExtent2D GetExtent() const;
+        //void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+        //VkExtent2D GetExtent() const;
 
     private:
         static void FrameBufferResizedCB(GLFWwindow* window, int width, int height);

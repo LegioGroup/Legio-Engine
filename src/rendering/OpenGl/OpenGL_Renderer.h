@@ -2,6 +2,7 @@
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Log.h>
 #include <Legio/rendering/LGCamera.h>
+#include <glad/glad.h>
 #include <optional>
 #include <memory.h>
 namespace LG

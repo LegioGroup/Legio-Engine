@@ -26,17 +26,29 @@
 *.a
 *.lib
 
+#symbols
+*.pdb
+*.exp
+
 # Executables
 *.exe
 *.out
 *.app
 
+#VSCode
+.vscode
+.vs
+
+#visual studio
+*.sln
+*.vcxproj*
+
+
 #ignore build
 build
 [Bb][Uu][Ii][Ll][Dd]
-
-#Compiled Shaders
-*.spv
+bin
+bin-int
 
 #CMake stuff
 CMakeLists.txt.user
