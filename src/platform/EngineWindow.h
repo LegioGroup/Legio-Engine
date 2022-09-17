@@ -1,8 +1,9 @@
 #pragma once
 #include <Legio/platform/Window.h>
 
-//Vulkan
-//#define GLFW_INCLUDE_VULKAN
+#ifdef LG_VULKAN_API
+    #define GLFW_INCLUDE_VULKAN
+#endif // LG_VULKAN_API
 #include <GLFW/glfw3.h>
 namespace LG
 {
@@ -21,9 +22,10 @@ namespace LG
 
         inline GLFWwindow* GetNativeWindow() const { return m_window; }
         virtual void SetEventCallback(const EventCallbackFn& callback) { m_data.m_eventCallbackFn = callback; };
-        //Vulkan Specific
-        //void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
-        //VkExtent2D GetExtent() const;
+
+#ifdef LG_VULKAN_API
+        void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+#endif // LG_VULKAN_API
 
     private:
         static void FrameBufferResizedCB(GLFWwindow* window, int width, int height);

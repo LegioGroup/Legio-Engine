@@ -24,6 +24,7 @@ namespace LG
         virtual void RenderFrame() override;
         virtual void RendererWaitIdle() override;
         virtual void OnEvent(Event& event) override;
+    
     private:
         void RecreateSwapChain();
         void FreeCommandBuffers();
@@ -33,6 +34,7 @@ namespace LG
         bool OnFrameBufferResizeEvent(FrameBufferResizeEvent& e);
         bool OnAppTickEvent(AppTickEvent& event);
     private:
+
         std::unique_ptr<VKDevice> m_device;
         std::unique_ptr<VKSwapChain> m_swapChain;
         std::vector<VkCommandBuffer> m_commandBuffers;

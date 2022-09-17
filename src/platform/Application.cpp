@@ -6,8 +6,12 @@
 
 
 #include "WindowsInput.h"
-//#include "rendering/vulkan/Vulkan_Renderer.h"
+#ifdef LG_VULKAN_API
+    #include "rendering/vulkan/Vulkan_Renderer.h"
+#endif
+#ifdef LG_OPENGL_API
 #include "rendering/OpenGL/OpenGL_Renderer.h"
+#endif
 #include "platform/EngineWindow.h"
 namespace LG
 {
@@ -54,8 +58,12 @@ namespace LG
         ServiceLocator::Provide(new Log());
         ServiceLocator::Provide(new EngineWindow({1600, 1200, m_appName.c_str()}));
         ServiceLocator::Provide(new WindowsInput());
+#ifdef LG_VULKAN_API
+        ServiceLocator::Provide(new VKRenderer());
+#endif
+#ifdef LG_OPENGL_API
         ServiceLocator::Provide(new OpenGLRenderer());
-
+#endif
         ServiceLocator::GetWindow()->SetEventCallback(LG_BIND_EVENT_FN(Application::OnEvent));
 
         ServiceLocator::GetLog()->Init();

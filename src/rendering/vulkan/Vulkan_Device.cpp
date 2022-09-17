@@ -158,7 +158,10 @@ namespace LG
     void VKDevice::CreateSurface()
     {
         auto* engineWindow = static_cast<EngineWindow*>(ServiceLocator::GetWindow());
+#ifdef LG_VULKAN_API //TODO:Change this
         engineWindow->CreateWindowSurface(m_instance, &m_surface);
+#endif // LG_VULKAN_API
+
     }
 
     void VKDevice::PickPhysicalDevice()

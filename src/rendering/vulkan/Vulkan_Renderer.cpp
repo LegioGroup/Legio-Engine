@@ -17,7 +17,7 @@ namespace LG
         LG_CORE_INFO("Initialize Vulkan Renderer!");
         auto* window = static_cast<EngineWindow*>(ServiceLocator::GetWindow());
         m_device = std::make_unique<VKDevice>();
-        m_swapChain = std::make_unique<VKSwapChain>(m_device.get(), window->GetExtent());
+        m_swapChain = std::make_unique<VKSwapChain>(m_device.get(), LG::VulkanUtils::GetWindowExtent(*window));
         RecreateSwapChain();
 
         m_camera.SetViewTarget(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
@@ -38,11 +38,11 @@ namespace LG
     void VKRenderer::RecreateSwapChain()
     {
         auto* window = static_cast<EngineWindow*>(ServiceLocator::GetWindow());
-        auto extent = window->GetExtent();
+        auto extent = VulkanUtils::GetWindowExtent(*window);
 
         while (extent.width == 0 || extent.height == 0)
         {
-            extent = window->GetExtent();
+            extent = VulkanUtils::GetWindowExtent(*window);
             glfwWaitEvents();
         }
 

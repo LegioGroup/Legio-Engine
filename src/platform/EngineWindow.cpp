@@ -28,21 +28,25 @@ namespace LG
         {
             LG_CORE_CRITICAL("Couldn't initialize GLFW!");
         }
+        
+#ifdef LG_VULKAN_API
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+#endif // LG_VULKAN_API
+
+#ifdef LG_OPENGL_API
         // Set all the required options for GLFW
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        //Vulkan
-        //glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        
-        //OpenGl
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif // LG_OPENGL_API
         
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         m_window = glfwCreateWindow(m_data.m_width, m_data.m_height, m_data.m_name, nullptr, nullptr);
 
-        //OpenGl
+#ifdef LG_OPENGL_API
         glfwMakeContextCurrent(m_window);
+#endif // LG_OPENGL_API
 
         glfwSetWindowUserPointer(m_window, &m_data);
         glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
@@ -144,17 +148,14 @@ namespace LG
         glfwSwapBuffers(m_window);
     }
 
-    //void EngineWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
-    //{
-    //    if(glfwCreateWindowSurface(instance, m_window, nullptr, surface) != VK_SUCCESS)
-    //    {
-    //        LG_CORE_CRITICAL("Failed to create Window Surface");
-    //        throw std::runtime_error("Failed to create Window Surface");
-    //    }
-    //}
-
-    //VkExtent2D EngineWindow::GetExtent() const
-    //{
-    //    return {static_cast<uint32_t>(m_data.m_width), static_cast<uint32_t>(m_data.m_height)};
-    //}
+#ifdef LG_VULKAN_API
+    void EngineWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+    {
+        if(glfwCreateWindowSurface(instance, m_window, nullptr, surface) != VK_SUCCESS)
+        {
+            LG_CORE_CRITICAL("Failed to create Window Surface");
+            throw std::runtime_error("Failed to create Window Surface");
+        }
+    }
+#endif // LG_VULKAN_API
 } //namespace LG

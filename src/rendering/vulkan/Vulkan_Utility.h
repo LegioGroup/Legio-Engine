@@ -1,6 +1,7 @@
 #pragma once
 #include <stdexcept>
 #include "rendering/vulkan/Vulkan_Device.h"
+#include "platform/EngineWindow.h"
 namespace LG
 {
     namespace VulkanUtils
@@ -9,6 +10,11 @@ namespace LG
         {
             static inline VKDevice* device;
         };
+
+        static VkExtent2D GetWindowExtent(const EngineWindow& window)
+        {
+            return { static_cast<uint32_t>(window.GetWidth()), static_cast<uint32_t>(window.GetHeight()) };
+        }
 
         static inline VkCommandBuffer BeginSingleTimeCommands()
         {

@@ -316,7 +316,7 @@ namespace LG
         else
         {
             const auto* window = static_cast<EngineWindow*>(ServiceLocator::GetWindow());
-            VkExtent2D actualExtent = window->GetExtent();
+            VkExtent2D actualExtent = LG::VulkanUtils::GetWindowExtent(*window);
 
             actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
             actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);

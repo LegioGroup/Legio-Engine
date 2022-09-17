@@ -38,7 +38,7 @@ project "Legio"
         "src",
 		"external/spdlog/include",
 		"%{IncludeDir.GLFW}",
-		-- "%{IncludeDir.Glad}",
+		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
