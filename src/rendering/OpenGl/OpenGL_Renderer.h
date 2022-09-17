@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include <optional>
 #include <memory.h>
+#include <rendering/OpenGL/OpenGL_Shader.h>
 namespace LG
 {
     class OpenGLRenderer : public Renderer
@@ -15,5 +16,8 @@ namespace LG
         virtual void RenderFrame() override;
         virtual void RendererWaitIdle() override;
         virtual void OnEvent(Event& event) override;
+
+    private:
+        std::unique_ptr<Shader> m_shader;
     };
 } //namespace LG

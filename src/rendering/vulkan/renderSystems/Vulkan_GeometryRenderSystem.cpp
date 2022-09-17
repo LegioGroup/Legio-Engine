@@ -27,7 +27,7 @@ namespace LG
     {
         //Dangerous use of Shared ptr (if we don't assign a model and a texture to a gameobject we'll get validation errors)
         std::shared_ptr<VKModel> veModel_0 = std::make_shared<VKModel>(m_device);
-        std::shared_ptr<VKTexture> veTexture_0 = std::make_shared<VKTexture>(m_device, "../../external/engine/models/texture.jpg");
+        std::shared_ptr<VKTexture> veTexture_0 = std::make_shared<VKTexture>(m_device, "external/engine/models/texture.jpg");
 
         auto gameObject = VKGameObject::CreateGameObject();
         gameObject.m_model = veModel_0;
@@ -74,8 +74,8 @@ namespace LG
         pipelineConfig.pipelineLayout = m_pipelineLayout;
 
         m_pipeline = std::make_unique<VKPipeline>(m_device,
-            "../../external/engine/src/rendering/vulkan/shaders/basic_shader.vert.spv",
-            "../../external/engine/src/rendering/vulkan/shaders/basic_shader.frag.spv",
+            "external/engine/src/rendering/vulkan/shaders/basic_shader.vert.spv",
+            "external/engine/src/rendering/vulkan/shaders/basic_shader.frag.spv",
             pipelineConfig);
     }
 
