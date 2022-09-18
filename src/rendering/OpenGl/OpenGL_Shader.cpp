@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <Legio/platform/Log.h>
 #include "rendering/OpenGL/OpenGL_Shader.h"
+#include "rendering/OpenGL/OpenGL_Vertex.h"
 
 namespace LG
 {
@@ -68,15 +69,17 @@ namespace LG
 
     void Shader::SetupAttribs()
     {
+        //glEnableVertexAttribArray(m_posLoc);
+        //glVertexAttribPointer(m_posLoc, 3, GL_FLOAT, false, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(m_posLoc);
-        glVertexAttribPointer(m_posLoc, 3, GL_FLOAT, false, 3 * sizeof(float)/*sizeof(Vertex)*/, (void*)0/*reinterpret_cast<const void*>(offsetof(Vertex, m_vertexPosition))*/);
+        glVertexAttribPointer(m_posLoc, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_vertexPosition)));
 
+        /*glEnableVertexAttribArray(m_colorLoc);
+        glVertexAttribPointer(m_colorLoc, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_vertexColor)));
 
-        //glEnableVertexAttribArray(m_colorLoc);
-        //glVertexAttribPointer(m_colorLoc, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_vertexColor)));
+        glEnableVertexAttribArray(m_texCoordLoc);
+        glVertexAttribPointer(m_texCoordLoc, 2, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_texCoords)));*/
 
-        //glEnableVertexAttribArray(m_texCoordLoc);
-        //glVertexAttribPointer(m_texCoordLoc, 2, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_texCoords)));
     }
 
     void Shader::setInt(uint16_t loc, int val)
