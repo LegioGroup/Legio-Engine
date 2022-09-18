@@ -28,6 +28,7 @@ namespace LG
         {
             glGetShaderInfoLog(vertexID, 512, NULL, infoLog);
             LG_CORE_ERROR("SHADER::VERTEX::COMPILATION_FAILED\n");
+            LG_CORE_WARN(infoLog);
         }
 
         unsigned int fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -45,6 +46,7 @@ namespace LG
         if (!success) {
             glGetProgramInfoLog(m_programID, 512, NULL, infoLog);
             LG_CORE_ERROR("SHADER::FRAGMENT::COMPILATION_FAILED\n");
+            LG_CORE_WARN(infoLog);
         }
         glDetachShader(m_programID, vertexID);
         glDetachShader(m_programID, fragmentID);
