@@ -8,6 +8,7 @@
 #include <memory.h>
 #include <rendering/OpenGL/OpenGL_Shader.h>
 #include <rendering/OpenGL/OpenGL_Buffer.h>
+#include <rendering/OpenGL/OpenGL_Texture.h>
 namespace LG
 {
     class OpenGLRenderer : public Renderer
@@ -22,5 +23,6 @@ namespace LG
     private:
         std::shared_ptr<Shader> m_shader;
         std::unique_ptr<Buffer> m_buffer;
+        std::shared_ptr<Texture> m_texture;
     };
 } //namespace LG
