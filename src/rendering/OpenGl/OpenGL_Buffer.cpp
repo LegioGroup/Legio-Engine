@@ -27,7 +27,7 @@ namespace LG
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
 
-        m_numIndices = 6;/*m_indices.size()*/;
+        m_numIndices = indices.size();
     }
 
     Buffer::~Buffer()
