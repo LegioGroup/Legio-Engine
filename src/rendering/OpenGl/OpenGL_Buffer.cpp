@@ -40,7 +40,12 @@ namespace LG
     void Buffer::Draw()
     {
         m_shader->Use();
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
         glBindVertexArray(m_VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+
+        m_shader->SetupAttribs();
 
         if (m_numIndices > 0)
         {
