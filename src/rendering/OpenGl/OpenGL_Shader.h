@@ -20,6 +20,9 @@ namespace LG
         void setVec4(uint16_t loc, const glm::vec4& vec);
         void setMatrix(uint16_t loc, const glm::mat4& matrix);
 
+        inline uint32_t GetId() const { return m_programID; }
+        inline int GetLocation(const char* locationName) const { return glGetUniformLocation(m_programID, locationName); }
+
     private:
         std::string ReadString(const std::string& filename);
 
