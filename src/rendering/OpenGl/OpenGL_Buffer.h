@@ -15,12 +15,12 @@ namespace LG
         ~Buffer();
         void Draw();
     private:
-        //std::array<uint32_t, 2> m_ids{};
 
         unsigned int m_EBO;
         unsigned int m_VAO;
         unsigned int m_VBO;
         std::shared_ptr<Shader> m_shader;
+        std::vector<Vertex> m_vertices;
         size_t m_numIndices;
     };
 } //namespace LG 
