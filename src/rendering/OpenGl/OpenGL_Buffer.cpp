@@ -5,9 +5,8 @@ namespace LG
 {
 
 
-    Buffer::Buffer(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, std::shared_ptr<Shader> shader)
+    Buffer::Buffer(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
         : m_vertices(vertices)
-        , m_shader(shader)
     {
         glGenVertexArrays(1, &m_VAO);
         glGenBuffers(1, &m_VBO);
@@ -21,7 +20,7 @@ namespace LG
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices.size(), indices.data(), GL_STATIC_DRAW);
 
-        m_shader->SetupAttribs();
+        //m_shader->SetupAttribs();
         glEnableVertexAttribArray(0);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -37,15 +36,15 @@ namespace LG
         glDeleteBuffers(1, &m_EBO);
     }
 
-    void Buffer::Draw()
+    void Buffer::Draw(std::shared_ptr<Shader> shader)
     {
-        m_shader->Use();
+        shader->Use();
 
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
         glBindVertexArray(m_VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 
-        m_shader->SetupAttribs();
+        shader->SetupAttribs();
 
         if (m_numIndices > 0)
         {

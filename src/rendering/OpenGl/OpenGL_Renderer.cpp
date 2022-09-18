@@ -29,7 +29,7 @@ namespace LG
         glViewport(0, 0, LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight());
         
         m_shader = std::make_shared<Shader>("external/engine/shaders/vertex.glsl", "external/engine/shaders/fragment.glsl");
-        m_buffer = std::make_unique<Buffer>(vertices, indices, m_shader);
+        m_buffer = std::make_unique<Buffer>(vertices, indices);
     }
     
     void OpenGLRenderer::Shutdown()
@@ -43,7 +43,7 @@ namespace LG
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        m_buffer->Draw();
+        m_buffer->Draw(m_shader);
     }
 
     void OpenGLRenderer::RendererWaitIdle()
