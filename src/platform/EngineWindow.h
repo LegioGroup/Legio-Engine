@@ -12,16 +12,16 @@ namespace LG
     public:
         EngineWindow(WindowProps windowSettings = WindowProps());
         virtual ~EngineWindow();
-        virtual void Init() override;
-        virtual bool Update() override;
-        virtual int GetWidth() const override { return m_data.m_width;  }
-        virtual int GetHeight() const override { return m_data.m_height; }
-        virtual void SwapWindowBuffers() override;
+        void Init() override;
+        bool Update() override;
+        int GetWidth() const override { return m_data.m_width;  }
+        int GetHeight() const override { return m_data.m_height; }
+        void SwapWindowBuffers() override;
         static inline const char** GetRequiredInstanceExtension(uint32_t* extensionCount) {return glfwGetRequiredInstanceExtensions(extensionCount); }
 
 
         inline GLFWwindow* GetNativeWindow() const { return m_window; }
-        virtual void SetEventCallback(const EventCallbackFn& callback) { m_data.m_eventCallbackFn = callback; };
+        void SetEventCallback(const EventCallbackFn& callback) override { m_data.m_eventCallbackFn = callback; };
 
 #ifdef LG_VULKAN_API
         void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);

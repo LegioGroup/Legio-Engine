@@ -29,7 +29,7 @@ namespace LG
         static VKGameObject CreateGameObject() 
         {
             static id_t currentId = 0;
-            return VKGameObject(currentId++);
+            return {currentId++};
         }
 
         id_t GetId() { return m_id; };
