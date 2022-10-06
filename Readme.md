@@ -9,14 +9,29 @@ This engine is in very early development stages.
 
 
 ## Instructions
-
-To easily quickstart the development with Legio Engine just go to the base Legio Game App repository which provides a Game App Starting point https://github.com/LegioGroup/LegioGameApp.git and follow the instructions bellow:
-
 ---
 
+To clone the repository alongside the engine use the following command
+
 ```
-git clone --recurse-submodules -j8 https://github.com/LegioGroup/LegioGameApp.git
+git clone -b premakeSupport --recurse-submodules -j8 https://github.com/LegioGroup/LegioGameApp.git
 ```
+
+Once you've downloaded the project and the submodules run
+
+```
+python GetDeps.py
+```
+
+This will download premake and the Vulkan Installer
+
+To configure for vulkan run Configure_Vulkan_VS2022.bat
+
+To configure for OpenGL run Configure_Opengl_VS2022.bat
+
+If you want to configure for VS2019 or any other visualStudio version just modify the previous scripts and change the VS2022 parameter to the desired Visual Studio version.
+
+Currently the most stable branch is PremakeSupport which uses the OpenGlRender branch from the engine.
 
 To open the repo with Visual Studio Code just go to the directory and type the following command
 ```
