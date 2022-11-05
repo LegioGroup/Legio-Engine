@@ -7,23 +7,9 @@ namespace LG::World
         m_transform = glm::translate(m_transform, translation);
     }
 
-    void TransformComponent::Rotate(float degrees, Axis rotationAxis)
+    void TransformComponent::Rotate(float degrees, const glm::vec3& rotationAxis)
     {
-        glm::vec3 axis;
-        switch (rotationAxis)
-        {
-        case Axis::X:
-            axis = glm::vec3(1.f, 0.f, 0.f);
-            break;
-        case Axis::Y:
-            axis = glm::vec3(0.f, 1.f, 0.f);
-            break;
-        case Axis::Z:
-            axis = glm::vec3(0.f, 0.f, 1.f);
-            break;
-        }
-
-        m_transform = glm::rotate(m_transform,glm::radians(degrees), axis);
+        m_transform = glm::rotate(m_transform,glm::radians(degrees), rotationAxis);
     }
 
     void TransformComponent::Scale(glm::vec3 newScale)

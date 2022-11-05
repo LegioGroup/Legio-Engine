@@ -6,20 +6,13 @@
 
 namespace LG::World
 {
-    enum class Axis 
-    {
-        X,
-        Y,
-        Z
-    };
-
     class TransformComponent
     {
     public:
         TransformComponent() = default;
 
         void Translate(glm::vec3 translation);
-        void Rotate(float degrees, Axis rotationAxis);
+        void Rotate(float degrees, const glm::vec3& rotationAxis);
         void Scale(glm::vec3 newScale);
 
         glm::mat4 GetTransform() const;
