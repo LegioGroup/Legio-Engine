@@ -29,6 +29,8 @@ namespace LG
         }
 
         glViewport(0, 0, LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight());
+        m_camera.SetViewTarget(glm::vec3(-0.f, -0.f, -3.f), glm::vec3(0.f, 0.f, 0.0f));
+        m_camera.SetPerspectiveProjection(glm::radians(45.f), LG::ServiceLocator::GetWindow()->GetWidth() / LG::ServiceLocator::GetWindow()->GetHeight(), 0.1f, 10000.f);
         
         m_shader = std::make_shared<Shader>("external/engine/shaders/vertex.glsl", "external/engine/shaders/fragment.glsl");
         m_buffer = std::make_unique<Buffer>(vertices, indices);
@@ -39,9 +41,6 @@ namespace LG
         m_shader->Use();
         m_shader->setInt(m_shader->GetLocation("fTexture1"), m_textures[0]->GetID());
         m_shader->setInt(m_shader->GetLocation("fTexture2"), m_textures[1]->GetID());
-
-        m_shader->setMatrix(m_shader->GetLocation("transform"), m_transform.GetTransform());
-        m_transform.Translate({ .5f, -0.5f, 0.f });
     }
     
     void OpenGLRenderer::Shutdown()
@@ -60,7 +59,9 @@ namespace LG
         {
             texture->Bind();
         }
-        m_shader->setMatrix(m_shader->GetLocation("transform"), m_transform.GetTransform());
+        auto projection = m_camera.GetProjection() * m_camera.GetView();
+        glm::mat4 transform = projection * m_transform.GetTransform();
+        m_shader->setMatrix(m_shader->GetLocation("transform"), transform);
         m_buffer->Draw(m_shader);
     }
 
@@ -79,6 +80,8 @@ namespace LG
     {
         //Update Transform here for quick results
         m_transform.Rotate(90.f * event.GetFixedTick(), World::Axis::Z);
+        m_transform.Rotate(-90.f * event.GetFixedTick(), World::Axis::Y);
+        m_transform.Rotate(90.f * event.GetFixedTick(), World::Axis::X);
         return true;
     }
 } // namespace LG

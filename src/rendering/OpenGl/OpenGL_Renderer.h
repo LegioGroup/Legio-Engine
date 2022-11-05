@@ -31,5 +31,6 @@ namespace LG
 
         //Temp
         World::TransformComponent m_transform;
+        LGCamera m_camera;
     };
 } //namespace LG
