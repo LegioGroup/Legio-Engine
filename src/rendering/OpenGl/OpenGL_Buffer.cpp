@@ -8,6 +8,18 @@ namespace LG
     Buffer::Buffer(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
         : m_vertices(vertices)
     {
+        Init(indices);
+    }
+
+    Buffer::Buffer(const Primitive& shape)
+        : m_vertices(shape.GetVertices())
+    {
+        Init(shape.GetIndices());
+    }
+
+
+    void Buffer::Init(const std::vector<uint32_t>& indices)
+    {
         glGenVertexArrays(1, &m_VAO);
         glGenBuffers(1, &m_VBO);
         glGenBuffers(1, &m_EBO);
@@ -53,10 +65,6 @@ namespace LG
         else 
         {
             glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-
         }
     }
-
-
-
 } //namespace LG 

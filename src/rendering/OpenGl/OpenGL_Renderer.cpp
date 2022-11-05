@@ -8,19 +8,11 @@
 
 namespace LG
 {
-    std::vector<Vertex> vertices = {
-        { glm::vec3( 0.5f,  0.5f, 0.0f), {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, {}},
-        { glm::vec3( 0.5f, -0.5f, 0.0f), {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}, {}},
-        { glm::vec3(-0.5f, -0.5f, 0.0f), {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {}},
-        { glm::vec3(-0.5f,  0.5f, 0.0f), {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}, {}}
-    };
 
-    std::vector<uint32_t> indices = {
-        0, 1, 2,//Triangle 1
-        0, 2, 3 //Triangle 2
-    };
-
-
+    static Pyramid  pyramid;
+    static Cube     cube;
+    static Quad     quad;
+    static Triangle triangle;
     void OpenGLRenderer::Init(RendererSettings settings)
     {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -28,12 +20,15 @@ namespace LG
             LG_CORE_ERROR("Failed to initialize OpenGL context");
         }
 
+        glEnable(GL_DEPTH_TEST);
+
+
         glViewport(0, 0, LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight());
-        m_camera.SetViewTarget(glm::vec3(-0.f, -0.f, -3.f), glm::vec3(0.f, 0.f, 0.0f));
+        m_camera.SetViewTarget(glm::vec3(-0.f, -4.f, -3.f), glm::vec3(0.f, 0.f, 0.0f));
         m_camera.SetPerspectiveProjection(glm::radians(45.f), LG::ServiceLocator::GetWindow()->GetWidth() / LG::ServiceLocator::GetWindow()->GetHeight(), 0.1f, 10000.f);
         
         m_shader = std::make_shared<Shader>("external/engine/shaders/vertex.glsl", "external/engine/shaders/fragment.glsl");
-        m_buffer = std::make_unique<Buffer>(vertices, indices);
+        m_buffer = std::make_unique<Buffer>(cube);
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/front.png"));
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/awesomeface.png"));
 
@@ -53,7 +48,7 @@ namespace LG
         // Clear the colorbuffer
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for(const auto& texture : m_textures)
         {
@@ -81,7 +76,7 @@ namespace LG
         //Update Transform here for quick results
         m_transform.Rotate(90.f * event.GetFixedTick(), World::Axis::Z);
         m_transform.Rotate(-90.f * event.GetFixedTick(), World::Axis::Y);
-        m_transform.Rotate(90.f * event.GetFixedTick(), World::Axis::X);
+        //m_transform.Rotate(90.f * event.GetFixedTick(), World::Axis::X);
         return true;
     }
 } // namespace LG
