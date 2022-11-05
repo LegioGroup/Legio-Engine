@@ -16,16 +16,16 @@ namespace LG
 
 
     glm::vec3 cubePositions[10] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f,  2.0f, -2.5f),
-        glm::vec3(1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
+        glm::vec3(0.0f,   1.0f,  0.0f),
+        glm::vec3(2.0f,   6.0f, -15.0f),
+        glm::vec3(-1.5f, -1.2f, -2.5f),
+        glm::vec3(-3.8f, -1.0f, -12.3f),
+        glm::vec3(2.4f,   1.4f, -3.5f),
+        glm::vec3(-1.7f,  4.0f, -7.5f),
+        glm::vec3(1.3f,  -1.0f, -2.5f),
+        glm::vec3(1.5f,   3.0f, -2.5f),
+        glm::vec3(1.5f,   1.2f, -1.5f),
+        glm::vec3(-1.3f,  0.0f, -1.5f)
     };
 
     void OpenGLRenderer::Init(RendererSettings settings)
@@ -72,11 +72,11 @@ namespace LG
         //Draw 10 cubes
         for (unsigned int i = 0; i < 10; i++)
         {
-            m_transform = World::TransformComponent();
-            m_transform.Translate(cubePositions[i]);
-            m_transform.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
+            World::TransformComponent transformComp;
+            transformComp.Translate(cubePositions[i]);
+            transformComp.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
             auto projection = m_camera.GetProjection() * m_camera.GetView();
-            glm::mat4 transform = projection * m_transform.GetTransform();
+            glm::mat4 transform = projection * transformComp.GetTransform();
             m_shader->setMatrix(m_shader->GetLocation("transform"), transform);
             m_buffer->Draw(m_shader);
         }
@@ -91,16 +91,25 @@ namespace LG
     {
         EventDispatcher dispatcher(event);
         dispatcher.Dispatch<AppTickEvent>(LG_BIND_EVENT_FN(OpenGLRenderer::OnAppTickEvent));
+        dispatcher.Dispatch<MouseMovedEvent>(LG_BIND_EVENT_FN(OpenGLRenderer::OnMouseMovedEvent));
+        dispatcher.Dispatch<MouseScrolledEvent>(LG_BIND_EVENT_FN(OpenGLRenderer::OnMouseScrolledEvent));
 
     }
 
     bool OpenGLRenderer::OnAppTickEvent(AppTickEvent& event)
     {
-        //Update Transform here for quick results
-        //m_transform.Rotate(90.f * event.GetFixedTick(), World::Axis::Z);
-        //m_transform.Rotate(-90.f * event.GetFixedTick(), World::Axis::Y);
-        ////m_transform.Rotate(90.f * event.GetFixedTick(), World::Axis::X);
+        m_camera.OnAppTickEvent(event);
         return true;
+    }
+    bool OpenGLRenderer::OnMouseMovedEvent(MouseMovedEvent& event)
+    {
+        m_camera.OnMouseMovedEvent(event);
+        return false;
+    }
+    bool OpenGLRenderer::OnMouseScrolledEvent(MouseScrolledEvent& event)
+    {
+        m_camera.OnMouseScrolledEvent(event);
+        return false;
     }
 } // namespace LG
 

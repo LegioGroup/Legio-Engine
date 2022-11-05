@@ -24,13 +24,16 @@ namespace LG
 
     private:
         bool OnAppTickEvent(AppTickEvent& event);
+        bool OnMouseMovedEvent(MouseMovedEvent& event);
+        bool OnMouseScrolledEvent(MouseScrolledEvent& event);
     private:
         std::shared_ptr<Shader> m_shader;
         std::unique_ptr<Buffer> m_buffer;
         std::vector<std::shared_ptr<Texture>> m_textures;
 
         //Temp
-        World::TransformComponent m_transform;
         LGCamera m_camera;
+        World::TransformComponent m_camTransform;
+
     };
 } //namespace LG
