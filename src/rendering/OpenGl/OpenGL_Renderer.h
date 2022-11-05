@@ -23,6 +23,6 @@ namespace LG
     private:
         std::shared_ptr<Shader> m_shader;
         std::unique_ptr<Buffer> m_buffer;
-        std::shared_ptr<Texture> m_texture;
+        std::vector<std::shared_ptr<Texture>> m_textures;
     };
 } //namespace LG

@@ -8,9 +8,10 @@ namespace LG
     {
     public:
         static std::shared_ptr<Texture> Load(const char* filename);
-        void Bind();
+        void Bind() const;
         Texture();
     
+        inline uint32_t GetID() const { return m_id; }
     private:
         uint32_t m_id;
         glm::ivec2 m_size;
