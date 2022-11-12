@@ -103,7 +103,11 @@ namespace LG
     }
     bool OpenGLRenderer::OnMouseMovedEvent(MouseMovedEvent& event)
     {
-        m_camera.OnMouseMovedEvent(event);
+        if (!event.Handled()) 
+        {
+            m_camera.OnMouseMovedEvent(event);
+            return true;
+        }
         return false;
     }
     bool OpenGLRenderer::OnMouseScrolledEvent(MouseScrolledEvent& event)

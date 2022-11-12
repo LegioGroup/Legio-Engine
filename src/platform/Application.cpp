@@ -87,6 +87,7 @@ namespace LG
     void Application::OnEvent(Event& event)
     {
         //LG_CORE_INFO("Event: {0}", event.ToString());
+        ServiceLocator::GetEditor()->OnEvent(event);
         ServiceLocator::GetRenderer()->OnEvent(event);
     }
 
