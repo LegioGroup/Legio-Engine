@@ -1,4 +1,4 @@
-#include "OpenGl_FrameBuffer.h"
+#include "OpenGL_FrameBuffer.h"
 #include <Legio/ServiceLocator.h>
 #include <glad/glad.h>
 
