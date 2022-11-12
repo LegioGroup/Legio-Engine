@@ -36,6 +36,7 @@ namespace LG
         io.ConfigWindowsResizeFromEdges = true;
         io.WantCaptureKeyboard = true;
         io.WantCaptureKeyboard = false;
+        io.IniFilename = "config/editor.ini";
 
 
         // Setup Dear ImGui style
@@ -65,8 +66,16 @@ namespace LG
 
     void Editor::RenderFrame()
     {
+        ImGuiIO& io = ImGui::GetIO();
+        io.DisplaySize = ImVec2(ServiceLocator::GetWindow()->GetWidth(), ServiceLocator::GetWindow()->GetHeight());
+
+
+
+        ImGui::ShowDemoWindow();
+
         static bool someBoolean = false;
         static float speed = 0.0f;
+
         ImGui::Begin("MyWindow");
         {
             ImGui::Checkbox("Boolean property", &someBoolean);
@@ -74,24 +83,21 @@ namespace LG
                 speed = 0;
             }
             ImGui::SliderFloat("Speed", &speed, 0.0f, 10.0f);
-
-            ImGui::End();
         }
-
-        ImGui::Begin("MyOtherWindow");
-        {
-            ImGui::Checkbox("Boolean property", &someBoolean);
-            if (ImGui::Button("Reset Speed")) {
-                speed = 0;
-            }
-            ImGui::SliderFloat("Speed", &speed, 0.0f, 10.0f);
-
-            ImGui::End();
-        }
+        ImGui::End();
 
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
 
     }
 
@@ -180,6 +186,7 @@ namespace LG
 
     void Editor::ApplyStyle()
     {
+        ImGuiIO& io = ImGui::GetIO();
         ImGuiStyle& style = ImGui::GetStyle();
 
         style.WindowBorderSize = 1.0f;
@@ -194,6 +201,11 @@ namespace LG
         style.GrabRounding = k_roundness;
         style.ScrollbarRounding = k_roundness;
         style.Alpha = 1.0f;
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            style.WindowRounding = 0.0f;
+            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        }
     }
 
 }
