@@ -76,13 +76,26 @@ namespace LG
         static bool someBoolean = false;
         static float speed = 0.0f;
 
-        ImGui::Begin("MyWindow");
+        //ImGui::Begin("MyWindow");
+        //{
+        //    ImGui::Checkbox("Boolean property", &someBoolean);
+        //    if (ImGui::Button("Reset Speed")) {
+        //        speed = 0;
+        //    }
+        //    ImGui::SliderFloat("Speed", &speed, 0.0f, 10.0f);
+        //}
+        //ImGui::End();
+
+        ImGui::Begin("GameWindow");
         {
-            ImGui::Checkbox("Boolean property", &someBoolean);
-            if (ImGui::Button("Reset Speed")) {
-                speed = 0;
-            }
-            ImGui::SliderFloat("Speed", &speed, 0.0f, 10.0f);
+            // Using a Child allow to fill all the space of the window.
+            // It also alows customization
+            ImGui::BeginChild("GameRender");
+            // Get the size of the child (i.e. the whole draw size of the windows).
+            ImVec2 wsize = ImGui::GetWindowSize();
+            // Because I use the texture from OpenGL, I need to invert the V from the UV.
+            ImGui::Image((ImTextureID)ServiceLocator::GetRenderer()->GetRenderTexture(), wsize, ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::EndChild();
         }
         ImGui::End();
 
@@ -117,7 +130,7 @@ namespace LG
     bool Editor::OnMouseMovedEvent(MouseMovedEvent& event)
     {
         ImGuiIO& io = ImGui::GetIO();
-        return io.WantCaptureMouse;
+        return false;
     }
 
     bool Editor::OnMouseScrolledEvent(MouseScrolledEvent& event)
@@ -170,8 +183,8 @@ namespace LG
         colors[ImGuiCol_TabActive] = k_color_dark_very;
         colors[ImGuiCol_TabUnfocused] = k_color_light;
         colors[ImGuiCol_TabUnfocusedActive] = k_color_light;                 // Might be called active, but it's active only because it's it's the only tab available, the user didn't really activate it
-        //colors[ImGuiCol_DockingPreview] = k_color_dark_very;             // Preview overlay color when about to docking something
-        //colors[ImGuiCol_DockingEmptyBg] = k_color_interactive;           // Background color for empty node (e.g. CentralNode with no window docked into it)
+        colors[ImGuiCol_DockingPreview] = k_color_dark_very;             // Preview overlay color when about to docking something
+        colors[ImGuiCol_DockingEmptyBg] = k_color_interactive;           // Background color for empty node (e.g. CentralNode with no window docked into it)
         colors[ImGuiCol_PlotLines] = k_color_interactive;
         colors[ImGuiCol_PlotLinesHovered] = k_color_interactive_hovered;
         colors[ImGuiCol_PlotHistogram] = k_color_interactive;

@@ -12,5 +12,7 @@ namespace LG
         virtual void RenderFrame() = 0;
         virtual void RendererWaitIdle(){};
         virtual void OnEvent(Event& event) = 0;
+
+        virtual unsigned int GetRenderTexture() const = 0;
     };
 }

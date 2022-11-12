@@ -35,14 +35,12 @@ namespace LG
             LG_CORE_ERROR("Failed to initialize OpenGL context");
         }
 
-        glEnable(GL_DEPTH_TEST);
-
-
         glViewport(0, 0, LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight());
         m_camera.SetViewTarget(glm::vec3(1.f, -7.f, -7.f), glm::vec3(0.f, 3.f, 0.0f));
         m_camera.SetPerspectiveProjection(glm::radians(45.f), LG::ServiceLocator::GetWindow()->GetWidth() / LG::ServiceLocator::GetWindow()->GetHeight(), 0.1f, 10000.f);
         
         m_shader = std::make_shared<Shader>("external/engine/shaders/vertex.glsl", "external/engine/shaders/fragment.glsl");
+        m_screenShader = std::make_shared<Shader>("external/engine/shaders/screenVertex.glsl", "external/engine/shaders/screenFragment.glsl");
         m_buffer = std::make_unique<Buffer>(cube);
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/front.png"));
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/awesomeface.png"));
@@ -51,6 +49,37 @@ namespace LG
         m_shader->Use();
         m_shader->setInt(m_shader->GetLocation("fTexture1"), m_textures[0]->GetID());
         m_shader->setInt(m_shader->GetLocation("fTexture2"), m_textures[1]->GetID());
+
+        m_screenShader->Use();
+        m_screenShader->setInt(m_screenShader->GetLocation("screenTexture"), 2);
+
+        glGenFramebuffers(1, &m_fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+        // generate texture
+        glGenTextures(1, &m_renderTexture);
+        glBindTexture(GL_TEXTURE_2D, m_renderTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // attach it to currently bound framebuffer object
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_renderTexture, 0);
+
+        glGenRenderbuffers(1, &m_rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight());
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
+        {
+            LG_CORE_ERROR("OpenGLRenderer:: Framebuffer is not complete!");
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     }
     
     void OpenGLRenderer::Shutdown()
@@ -61,6 +90,9 @@ namespace LG
     {
         // Render
         // Clear the colorbuffer
+
+        glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+        glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -81,6 +113,12 @@ namespace LG
             m_buffer->Draw(m_shader);
         }
 
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        m_screenShader->Use();
     }
 
     void OpenGLRenderer::RendererWaitIdle()
