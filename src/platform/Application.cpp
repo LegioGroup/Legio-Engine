@@ -46,7 +46,9 @@ namespace LG
             }
 
             //Draw Frame
+            LG::ServiceLocator::GetEditor()->BeginFrame();
             LG::ServiceLocator::GetRenderer()->RenderFrame();
+            LG::ServiceLocator::GetEditor()->RenderFrame();
             LG::ServiceLocator::GetWindow()->SwapWindowBuffers();
         }
 
@@ -64,12 +66,14 @@ namespace LG
 #ifdef LG_OPENGL_API
         ServiceLocator::Provide(new OpenGLRenderer());
 #endif
+        ServiceLocator::Provide(new Editor());
         ServiceLocator::GetWindow()->SetEventCallback(LG_BIND_EVENT_FN(Application::OnEvent));
 
         ServiceLocator::GetLog()->Init();
         ServiceLocator::GetWindow()->Init();
         ServiceLocator::GetInput()->Init();
         ServiceLocator::GetRenderer()->Init();
+        ServiceLocator::GetEditor()->Init();
 
         LG_CORE_INFO("Services Initiated!");
     }

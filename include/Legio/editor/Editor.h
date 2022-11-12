@@ -6,5 +6,11 @@ namespace LG
     {
     public:
         Editor() = default;
+        void Init();
+        void Shutdown();
+
+        void BeginFrame();
+        void RenderFrame();
+
     };
 }
