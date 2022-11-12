@@ -19,7 +19,7 @@ namespace LG
         VKRenderer(const VKRenderer&) = delete;
         VKRenderer& operator=(const VKRenderer&) = delete;
 
-        virtual void Init(RendererSettings settings) override;
+        virtual void Init() override;
         virtual void Shutdown() override;
         virtual void RenderFrame() override;
         virtual void RendererWaitIdle() override;

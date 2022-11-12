@@ -69,7 +69,7 @@ namespace LG
         ServiceLocator::GetLog()->Init();
         ServiceLocator::GetWindow()->Init();
         ServiceLocator::GetInput()->Init();
-        ServiceLocator::GetRenderer()->Init(RendererSettings());
+        ServiceLocator::GetRenderer()->Init();
 
         LG_CORE_INFO("Services Initiated!");
     }

@@ -28,7 +28,7 @@ namespace LG
         glm::vec3(-1.3f,  0.0f, -1.5f)
     };
 
-    void OpenGLRenderer::Init(RendererSettings settings)
+    void OpenGLRenderer::Init()
     {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {

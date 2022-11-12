@@ -6,18 +6,22 @@
 #include <Legio/platform/Window.h>
 #include <Legio/rendering/Renderer.h>
 #include <Legio/platform/Input.h>
+#include <Legio/editor/Editor.h>
 
 
-#define LG_PROVIDE_FN(Class, sourcePtr, targetPtr)             \
-static inline void Provide(Class* sourcePtr)                   \
-{                                                              \
-    if(targetPtr != nullptr)                                   \
-    {                                                          \
-        return;                                                \
-    }                                                          \
-    targetPtr = std::unique_ptr<Class>(sourcePtr);             \
-}                                                              \
-static inline Class* Get##Class##() { return targetPtr.get(); }\
+#define LG_PROVIDE_FN(Class)                                                         \
+static inline void Provide(Class* ptr)                                               \
+{                                                                                    \
+    if(s_##Class## != nullptr)                                                       \
+    {                                                                                \
+        return;                                                                      \
+    }                                                                                \
+    s_##Class## = std::unique_ptr<Class>(ptr);                                       \
+}                                                                                    \
+static inline Class* Get##Class##() { return s_##Class##.get(); }                    \
+                                                                                     \
+private: static inline std::unique_ptr<Class> s_##Class## = nullptr;  public:        \
+
 
 namespace LG
 {
@@ -25,25 +29,20 @@ namespace LG
     {
     public:
 
-        LG_PROVIDE_FN(Log, log, m_log);
-        LG_PROVIDE_FN(Window, window, m_window);
-        LG_PROVIDE_FN(Input, input, m_input);
-        LG_PROVIDE_FN(Renderer, renderer, m_renderer);
+        LG_PROVIDE_FN(Log);
+        LG_PROVIDE_FN(Window);
+        LG_PROVIDE_FN(Input);
+        LG_PROVIDE_FN(Renderer);
+        LG_PROVIDE_FN(Editor);
 
         static inline void ShutdownServices()
         {
-            m_renderer->Shutdown();
-            m_input.reset();
-            m_window.reset();
-            m_log.reset();
+            s_Renderer->Shutdown();
+            s_Input.reset();
+            s_Window.reset();
+            s_Log.reset();
+            s_Editor.reset();
         }
-
-    private:
-
-        static inline std::unique_ptr<Log> m_log = nullptr;
-        static inline std::unique_ptr<Window> m_window = nullptr;
-        static inline std::unique_ptr<Input> m_input = nullptr;
-        static inline std::unique_ptr<Renderer> m_renderer = nullptr;
     };
 
 } //namespace LG

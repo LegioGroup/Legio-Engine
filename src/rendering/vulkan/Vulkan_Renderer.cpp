@@ -12,7 +12,7 @@
 #include "rendering/vulkan/Vulkan_Renderer.h"
 namespace LG
 {
-    void VKRenderer::Init(RendererSettings settings)
+    void VKRenderer::Init()
     {
         LG_CORE_INFO("Initialize Vulkan Renderer!");
         auto* window = static_cast<EngineWindow*>(ServiceLocator::GetWindow());
