@@ -25,8 +25,8 @@ namespace LG::World
         void Decompose() const;
     private:
         mutable glm::mat4 m_transform = glm::mat4(1.0f);
-        mutable glm::vec3 m_position;
-        mutable glm::vec3 m_scale;
-        mutable glm::quat m_rotation;
+        mutable glm::vec3 m_position{};
+        mutable glm::vec3 m_scale{};
+        mutable glm::quat m_rotation{};
     };
 }

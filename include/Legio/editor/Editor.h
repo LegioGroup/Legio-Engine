@@ -1,5 +1,6 @@
 #pragma once
-
+#include  <functional>
+#include <Legio/editor/widgets/IWidget.h>
 namespace LG 
 {
     class Editor 
@@ -19,5 +20,9 @@ namespace LG
 
         void ApplyColors();
         void ApplyStyle();
+        void RenderEditorDockSpace();
+    private:
+        std::vector<std::unique_ptr<IWidget>> m_widgets;
+        std::function<void()> m_createChildWidgets_Fn;
     };
 }
