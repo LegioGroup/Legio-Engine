@@ -13,6 +13,17 @@ namespace LG
         void Use();
         void SetupAttribs();
 
+        void setInt(const char* loc, int val);
+        void setFloat(const char* loc, float val);
+        void setVec2(const char* loc, const glm::vec2& vec);
+        void setVec3(const char* loc, const glm::vec3& vec);
+        void setVec4(const char* loc, const glm::vec4& vec);
+        void setMatrix(const char* loc, const glm::mat4& matrix);
+
+        inline uint32_t GetId() const { return m_programID; }
+        inline int GetLocation(const char* locationName) const { return glGetUniformLocation(m_programID, locationName); }
+
+    private:
         void setInt(uint16_t loc, int val);
         void setFloat(uint16_t loc, float val);
         void setVec2(uint16_t loc, const glm::vec2& vec);
@@ -20,10 +31,6 @@ namespace LG
         void setVec4(uint16_t loc, const glm::vec4& vec);
         void setMatrix(uint16_t loc, const glm::mat4& matrix);
 
-        inline uint32_t GetId() const { return m_programID; }
-        inline int GetLocation(const char* locationName) const { return glGetUniformLocation(m_programID, locationName); }
-
-    private:
         std::string ReadString(const std::string& filename);
 
     private:

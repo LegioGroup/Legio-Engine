@@ -51,21 +51,22 @@ namespace LG
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/awesomeface.png"));
 
         m_ligtObjectBuffer = std::make_unique<Buffer>(pyramid);
-        m_LigthTransform.Translate({ -1.2f, 1.0f, -3.0f });
+        m_LigthTransform.Translate({ -1.2f, 1.0f, 5.0f });
 
         m_shader->Use();
-        m_shader->setInt(m_shader->GetLocation("fTexture1"), m_textures[0]->GetID());
-        m_shader->setInt(m_shader->GetLocation("fTexture2"), m_textures[1]->GetID());
+        m_shader->setInt("fTexture1", m_textures[0]->GetID());
+        m_shader->setInt("fTexture2", m_textures[1]->GetID());
 
         m_lightShader->Use();
-        m_lightShader->setVec3(m_lightShader->GetLocation("objectColor"), { 1.0f, 0.5f, 0.31f });
-        m_lightShader->setVec3(m_lightShader->GetLocation("lightColor"), { 1.0f, 1.0f, 1.0f });
-        m_lightShader->setVec3(m_lightShader->GetLocation("lightPos"), m_LigthTransform.GetPositon());
+        m_lightShader->setVec3("light.ambient", { 0.2f, 0.2f, 0.2f });
+        m_lightShader->setVec3("light.diffuse", {0.5f, 0.5f, 0.5f}); // darken diffuse light a bit
+        m_lightShader->setVec3("light.specular", { 1.0f, 1.0f, 1.0f });
+        m_lightShader->setVec3("lightPos", m_LigthTransform.GetPositon());
 
         m_sourceLightCubeShader->Use();
 
         m_screenShader->Use();
-        m_screenShader->setInt(m_screenShader->GetLocation("screenTexture"), 2); //TODO: Improve texture Class
+        m_screenShader->setInt("screenTexture", 2); //TODO: Improve texture Class
 
         m_screenBuffer = std::make_unique<FrameBuffer>(LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight());
 
@@ -97,11 +98,29 @@ namespace LG
             World::TransformComponent transformComp;
             transformComp.Translate(cubePositions[i]);
             transformComp.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
-            m_lightShader->setVec3(m_lightShader->GetLocation("lightPos"), m_LigthTransform.GetPositon());
-            m_lightShader->setVec3(m_lightShader->GetLocation("viewPos"), m_camera.GeTransform().GetPositon());
-            m_lightShader->setMatrix(m_lightShader->GetLocation("model"), transformComp.GetTransform());
-            m_lightShader->setMatrix(m_lightShader->GetLocation("view"), m_camera.GetView());
-            m_lightShader->setMatrix(m_lightShader->GetLocation("projection"), m_camera.GetProjection());
+
+            glm::vec3 lightColor;
+            lightColor.x = sin(glfwGetTime() * 2.0f);
+            lightColor.y = sin(glfwGetTime() * 0.7f);
+            lightColor.z = sin(glfwGetTime() * 1.3f);
+
+            glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+            glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+
+            m_lightShader->setVec3("light.ambient", ambientColor);
+            m_lightShader->setVec3("light.diffuse", diffuseColor);
+
+
+            m_lightShader->setVec3("lightPos", m_LigthTransform.GetPositon());
+            m_lightShader->setVec3("viewPos", m_camera.GeTransform().GetPositon());
+            m_lightShader->setMatrix("model", transformComp.GetTransform());
+            m_lightShader->setMatrix("view", m_camera.GetView());
+            m_lightShader->setMatrix("projection", m_camera.GetProjection());
+            m_lightShader->setVec3("material.ambient", { 1.0f, 0.5f, 0.31f });
+            m_lightShader->setVec3("material.diffuse", {1.0f, 0.5f, 0.31f});
+            m_lightShader->setVec3("material.specular", { 0.5f, 0.5f, 0.5f });
+            m_lightShader->setFloat("material.shininess", 32.0f);
+
             m_buffer->Draw(m_lightShader);
         }
         //---------------------------------------
@@ -110,7 +129,7 @@ namespace LG
         //transformComp.Rotate(20.f, { 1.2f, -3.0f, 2.0f });
         auto projection = m_camera.GetProjection() * m_camera.GetView();
         glm::mat4 transform = projection * m_LigthTransform.GetTransform();
-        m_sourceLightCubeShader->setMatrix(m_sourceLightCubeShader->GetLocation("transform"), transform);
+        m_sourceLightCubeShader->setMatrix("transform", transform);
         m_ligtObjectBuffer->Draw(m_sourceLightCubeShader);
         //---------------------------------------
 

@@ -86,6 +86,36 @@ namespace LG
 
     }
 
+    void Shader::setInt(const char* loc, int val)
+    {
+        setInt(GetLocation(loc), val);
+    }
+
+    void Shader::setFloat(const char* loc, float val)
+    {
+        setFloat(GetLocation(loc), val);
+    }
+
+    void Shader::setVec2(const char* loc, const glm::vec2& vec)
+    {
+        setVec2(GetLocation(loc), vec);
+    }
+
+    void Shader::setVec3(const char* loc, const glm::vec3& vec)
+    {
+        setVec3(GetLocation(loc), vec);
+    }
+
+    void Shader::setVec4(const char* loc, const glm::vec4& vec)
+    {
+        setVec4(GetLocation(loc), vec);
+    }
+
+    void Shader::setMatrix(const char* loc, const glm::mat4& matrix)
+    {
+        setMatrix(GetLocation(loc), matrix);
+    }
+
     void Shader::setInt(uint16_t loc, int val)
     {
         glUniform1i(loc, val);
