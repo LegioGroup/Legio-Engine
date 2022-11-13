@@ -23,7 +23,8 @@ namespace LG
         virtual void RenderFrame() override;
         virtual void RendererWaitIdle() override;
         virtual void OnEvent(Event& event) override;
-        virtual unsigned int GetRenderTexture() const { return m_screenBuffer->GetFrameTexture(); };
+        virtual unsigned int GetRenderTexture() const override{ return m_screenBuffer->GetFrameTexture(); };
+        virtual FrameBuffer* GetViewportScreenBuffer() override { return m_screenBuffer.get(); }
     private:
         bool OnAppTickEvent(AppTickEvent& event);
         bool OnMouseMovedEvent(MouseMovedEvent& event);

@@ -5,6 +5,8 @@
 #include "Legio/editor/widgets/Viewport.h"
 #include <Legio/editor/imgui/imgui_impl_glfw.h>
 #include <Legio/editor/imgui/imgui_impl_opengl3.h>
+#include <glad/glad.h>
+#include <rendering/OpenGl/OpenGL_FrameBuffer.h>
 namespace LG 
 {
     //= EDITOR OPTIONS ========================================================================================
@@ -80,23 +82,7 @@ namespace LG
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2(ServiceLocator::GetWindow()->GetWidth(), ServiceLocator::GetWindow()->GetHeight());
 
-
-
         RenderEditorDockSpace();
-
-        ImGui::Begin("GameWindow");
-        {
-            // Using a Child allow to fill all the space of the window.
-            // It also alows customization
-            ImGui::BeginChild("GameRender");
-            // Get the size of the child (i.e. the whole draw size of the windows).
-            ImVec2 wsize = ImGui::GetWindowSize();
-            // Because I use the texture from OpenGL, I need to invert the V from the UV.
-            ImGui::Image((ImTextureID)ServiceLocator::GetRenderer()->GetRenderTexture(), wsize, ImVec2(0, 1), ImVec2(1, 0));
-            ImGui::EndChild();
-        }
-        ImGui::End();
-
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -118,6 +104,7 @@ namespace LG
         dispatcher.Dispatch<AppTickEvent>(LG_BIND_EVENT_FN(Editor::OnAppTickEvent));
         dispatcher.Dispatch<MouseMovedEvent>(LG_BIND_EVENT_FN(Editor::OnMouseMovedEvent));
         dispatcher.Dispatch<MouseScrolledEvent>(LG_BIND_EVENT_FN(Editor::OnMouseScrolledEvent));
+        dispatcher.Dispatch<WindowResizeEvent>(LG_BIND_EVENT_FN(Editor::OnWindowResizedEvent));
     }
 
     bool Editor::OnAppTickEvent(AppTickEvent& event)
@@ -133,6 +120,13 @@ namespace LG
 
     bool Editor::OnMouseScrolledEvent(MouseScrolledEvent& event)
     {
+        return false;
+    }
+
+    bool Editor::OnWindowResizedEvent(WindowResizeEvent& event)
+    {
+        glViewport(0, 0, event.GetWidth(), event.GetHeight());
+        ServiceLocator::GetRenderer()->GetViewportScreenBuffer()->RescaleFrameBuffer(event.GetWidth(), event.GetHeight());
         return false;
     }
 

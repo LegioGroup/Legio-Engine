@@ -2,6 +2,7 @@
 #include <Legio/application/Events/Event.h>
 namespace LG
 {
+    class FrameBuffer;
     class Renderer
     {
     public:
@@ -14,5 +15,6 @@ namespace LG
         virtual void OnEvent(Event& event) = 0;
 
         virtual unsigned int GetRenderTexture() const = 0;
+        virtual FrameBuffer* GetViewportScreenBuffer() = 0;
     };
 }

@@ -17,6 +17,8 @@ namespace LG
         bool OnAppTickEvent(AppTickEvent& event);
         bool OnMouseMovedEvent(MouseMovedEvent& event);
         bool OnMouseScrolledEvent(MouseScrolledEvent& event);
+        bool OnWindowResizedEvent(WindowResizeEvent& event);
+
 
         void ApplyColors();
         void ApplyStyle();
