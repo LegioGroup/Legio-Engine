@@ -49,6 +49,9 @@ namespace LG
         m_buffer = std::make_unique<Buffer>(cubeNoIndices);
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/front.png"));
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/awesomeface.png"));
+        m_textures.emplace_back(Texture::Load("external/engine/models/textures/container2.png"));
+        m_textures.emplace_back(Texture::Load("external/engine/models/textures/container2_specular.png"));
+        m_textures.emplace_back(Texture::Load("external/engine/models/textures/matrix.jpg"));
 
         m_ligtObjectBuffer = std::make_unique<Buffer>(pyramid);
         m_LigthTransform.Translate({ -1.2f, 1.0f, 5.0f });
@@ -58,6 +61,9 @@ namespace LG
         m_shader->setInt("fTexture2", m_textures[1]->GetID());
 
         m_lightShader->Use();
+        m_lightShader->setInt("material.diffuse", m_textures[2]->GetID());
+        m_lightShader->setInt("material.specular", m_textures[3]->GetID());
+        //m_lightShader->setInt("material.emission", m_textures[4]->GetID());
         m_lightShader->setVec3("light.ambient", { 0.2f, 0.2f, 0.2f });
         m_lightShader->setVec3("light.diffuse", {0.5f, 0.5f, 0.5f}); // darken diffuse light a bit
         m_lightShader->setVec3("light.specular", { 1.0f, 1.0f, 1.0f });
@@ -99,16 +105,16 @@ namespace LG
             transformComp.Translate(cubePositions[i]);
             transformComp.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
 
-            glm::vec3 lightColor;
-            lightColor.x = sin(glfwGetTime() * 2.0f);
-            lightColor.y = sin(glfwGetTime() * 0.7f);
-            lightColor.z = sin(glfwGetTime() * 1.3f);
+            //glm::vec3 lightColor;
+            //lightColor.x = sin(glfwGetTime() * 2.0f);
+            //lightColor.y = sin(glfwGetTime() * 0.7f);
+            //lightColor.z = sin(glfwGetTime() * 1.3f);
 
-            glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-            glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+            //glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+            //glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 
-            m_lightShader->setVec3("light.ambient", ambientColor);
-            m_lightShader->setVec3("light.diffuse", diffuseColor);
+            //m_lightShader->setVec3("light.ambient", ambientColor);
+            //m_lightShader->setVec3("light.diffuse", diffuseColor);
 
 
             m_lightShader->setVec3("lightPos", m_LigthTransform.GetPositon());
@@ -119,7 +125,7 @@ namespace LG
             m_lightShader->setVec3("material.ambient", { 1.0f, 0.5f, 0.31f });
             m_lightShader->setVec3("material.diffuse", {1.0f, 0.5f, 0.31f});
             m_lightShader->setVec3("material.specular", { 0.5f, 0.5f, 0.5f });
-            m_lightShader->setFloat("material.shininess", 32.0f);
+            m_lightShader->setFloat("material.shininess", 64.0f);
 
             m_buffer->Draw(m_lightShader);
         }
