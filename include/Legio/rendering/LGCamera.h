@@ -29,6 +29,7 @@ namespace LG
         bool OnMouseScrolledEvent(MouseScrolledEvent& event);
 
         World::TransformComponent GeTransform() { return m_transform; }
+        glm::vec3 GetCameraFront() const { return m_cameraFront; }
     private:
         glm::mat4 m_projectionMatrix{ 1.f };
         glm::mat4 m_viewMatrix{ 1.f };
