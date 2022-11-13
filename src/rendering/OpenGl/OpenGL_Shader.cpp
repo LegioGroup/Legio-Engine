@@ -54,6 +54,7 @@ namespace LG
         m_posLoc = glGetAttribLocation(m_programID, "vpos");
         m_colorLoc = glGetAttribLocation(m_programID, "vcolor");
         m_texCoordLoc = glGetAttribLocation(m_programID, "vtex");
+        m_normalCoords = glGetAttribLocation(m_programID, "vnormal");
 
         glDeleteShader(vertexID);
         glDeleteShader(fragmentID);
@@ -79,6 +80,9 @@ namespace LG
 
         glEnableVertexAttribArray(m_texCoordLoc);
         glVertexAttribPointer(m_texCoordLoc, 2, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_texCoords)));
+
+        glEnableVertexAttribArray(m_normalCoords);
+        glVertexAttribPointer(m_normalCoords, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_texNormals)));
 
     }
 

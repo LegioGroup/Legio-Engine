@@ -35,5 +35,6 @@ namespace LG
         uint32_t m_posLoc;
         uint32_t m_colorLoc;
         uint32_t m_texCoordLoc;
+        uint32_t m_normalCoords;
     };
 } //namespace LG

@@ -1,7 +1,7 @@
 #version 330 core
 layout (location = 0) in vec3 vpos;
-layout (location = 1) in vec2 vtex;
-layout (location = 2) in vec3 vnormal;
+//layout (location = 1) in vec2 vtex;
+layout (location = 1) in vec3 vnormal;
 
 uniform mat4 transform;
 

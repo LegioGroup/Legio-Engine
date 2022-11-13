@@ -9,10 +9,11 @@
 namespace LG
 {
 
-    static Pyramid  pyramid;
-    static Cube     cube;
-    static Quad     quad;
-    static Triangle triangle;
+    static Pyramid          pyramid;
+    static Cube             cube;
+    static Quad             quad;
+    static Triangle         triangle;
+    static CubeNoIndices    cubeNoIndices;
 
 
     glm::vec3 cubePositions[10] = {
@@ -45,11 +46,12 @@ namespace LG
         m_sourceLightCubeShader = std::make_shared<Shader>("external/engine/shaders/sourceLightCubeVertex.glsl", "external/engine/shaders/sourceLightCubeFragment.glsl");
 
 
-        m_buffer = std::make_unique<Buffer>(cube);
+        m_buffer = std::make_unique<Buffer>(cubeNoIndices);
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/front.png"));
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/awesomeface.png"));
 
         m_ligtObjectBuffer = std::make_unique<Buffer>(pyramid);
+        m_LigthTransform.Translate({ -1.2f, 1.0f, -3.0f });
 
         m_shader->Use();
         m_shader->setInt(m_shader->GetLocation("fTexture1"), m_textures[0]->GetID());
@@ -58,7 +60,7 @@ namespace LG
         m_lightShader->Use();
         m_lightShader->setVec3(m_lightShader->GetLocation("objectColor"), { 1.0f, 0.5f, 0.31f });
         m_lightShader->setVec3(m_lightShader->GetLocation("lightColor"), { 1.0f, 1.0f, 1.0f });
-        //m_lightShader->setVec3(m_lightShader->GetLocation("lightPos"), { -1.2f, 1.0f, -3.0f });
+        m_lightShader->setVec3(m_lightShader->GetLocation("lightPos"), m_LigthTransform.GetPositon());
 
         m_sourceLightCubeShader->Use();
 
@@ -95,20 +97,18 @@ namespace LG
             World::TransformComponent transformComp;
             transformComp.Translate(cubePositions[i]);
             transformComp.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
-            auto projection = m_camera.GetProjection() * m_camera.GetView();
-            glm::mat4 transform = projection * transformComp.GetTransform();
-            m_lightShader->setMatrix(m_lightShader->GetLocation("transform"), transform);
+            m_lightShader->setVec3(m_lightShader->GetLocation("lightPos"), m_LigthTransform.GetPositon());
+            m_lightShader->setMatrix(m_lightShader->GetLocation("model"), transformComp.GetTransform());
+            m_lightShader->setMatrix(m_lightShader->GetLocation("view"), m_camera.GetView());
+            m_lightShader->setMatrix(m_lightShader->GetLocation("projection"), m_camera.GetProjection());
             m_buffer->Draw(m_lightShader);
         }
         //---------------------------------------
         //Light---------------------------
         m_sourceLightCubeShader->Use();
-        World::TransformComponent transformComp;
-        transformComp.Translate({ -1.2f, 1.0f, -3.0f });
-        transformComp.Scale({ .5f, .5f, .5f });
         //transformComp.Rotate(20.f, { 1.2f, -3.0f, 2.0f });
         auto projection = m_camera.GetProjection() * m_camera.GetView();
-        glm::mat4 transform = projection * transformComp.GetTransform();
+        glm::mat4 transform = projection * m_LigthTransform.GetTransform();
         m_sourceLightCubeShader->setMatrix(m_sourceLightCubeShader->GetLocation("transform"), transform);
         m_ligtObjectBuffer->Draw(m_sourceLightCubeShader);
         //---------------------------------------

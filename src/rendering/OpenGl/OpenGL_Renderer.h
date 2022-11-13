@@ -44,6 +44,7 @@ namespace LG
         //Temp
         LGCamera m_camera;
         World::TransformComponent m_camTransform;
+        World::TransformComponent m_LigthTransform;
 
     };
 } //namespace LG
