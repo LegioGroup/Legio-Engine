@@ -98,6 +98,7 @@ namespace LG
             transformComp.Translate(cubePositions[i]);
             transformComp.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
             m_lightShader->setVec3(m_lightShader->GetLocation("lightPos"), m_LigthTransform.GetPositon());
+            m_lightShader->setVec3(m_lightShader->GetLocation("viewPos"), m_camera.GeTransform().GetPositon());
             m_lightShader->setMatrix(m_lightShader->GetLocation("model"), transformComp.GetTransform());
             m_lightShader->setMatrix(m_lightShader->GetLocation("view"), m_camera.GetView());
             m_lightShader->setMatrix(m_lightShader->GetLocation("projection"), m_camera.GetProjection());

@@ -28,7 +28,7 @@ namespace LG
         bool OnMouseMovedEvent(MouseMovedEvent& event);
         bool OnMouseScrolledEvent(MouseScrolledEvent& event);
 
-
+        World::TransformComponent GeTransform() { return m_transform; }
     private:
         glm::mat4 m_projectionMatrix{ 1.f };
         glm::mat4 m_viewMatrix{ 1.f };
