@@ -41,17 +41,29 @@ namespace LG
         
         m_shader = std::make_shared<Shader>("external/engine/shaders/vertex.glsl", "external/engine/shaders/fragment.glsl");
         m_screenShader = std::make_shared<Shader>("external/engine/shaders/screenVertex.glsl", "external/engine/shaders/screenFragment.glsl");
+        m_lightShader = std::make_shared<Shader>("external/engine/shaders/lightVertex.glsl", "external/engine/shaders/lightFragment.glsl");
+        m_sourceLightCubeShader = std::make_shared<Shader>("external/engine/shaders/sourceLightCubeVertex.glsl", "external/engine/shaders/sourceLightCubeFragment.glsl");
+
+
         m_buffer = std::make_unique<Buffer>(cube);
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/front.png"));
         m_textures.emplace_back(Texture::Load("external/engine/models/textures/awesomeface.png"));
 
+        m_ligtObjectBuffer = std::make_unique<Buffer>(pyramid);
 
         m_shader->Use();
         m_shader->setInt(m_shader->GetLocation("fTexture1"), m_textures[0]->GetID());
         m_shader->setInt(m_shader->GetLocation("fTexture2"), m_textures[1]->GetID());
 
+        m_lightShader->Use();
+        m_lightShader->setVec3(m_lightShader->GetLocation("objectColor"), { 1.0f, 0.5f, 0.31f });
+        m_lightShader->setVec3(m_lightShader->GetLocation("lightColor"), { 1.0f, 1.0f, 1.0f });
+        //m_lightShader->setVec3(m_lightShader->GetLocation("lightPos"), { -1.2f, 1.0f, -3.0f });
+
+        m_sourceLightCubeShader->Use();
+
         m_screenShader->Use();
-        m_screenShader->setInt(m_screenShader->GetLocation("screenTexture"), 2);
+        m_screenShader->setInt(m_screenShader->GetLocation("screenTexture"), 2); //TODO: Improve texture Class
 
         m_screenBuffer = std::make_unique<FrameBuffer>(LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight());
 
@@ -76,7 +88,8 @@ namespace LG
         {
             texture->Bind();
         }
-        //Draw 10 cubes
+
+        //Objects---------------------------Draw 10 cubes
         for (unsigned int i = 0; i < 10; i++)
         {
             World::TransformComponent transformComp;
@@ -84,9 +97,21 @@ namespace LG
             transformComp.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
             auto projection = m_camera.GetProjection() * m_camera.GetView();
             glm::mat4 transform = projection * transformComp.GetTransform();
-            m_shader->setMatrix(m_shader->GetLocation("transform"), transform);
-            m_buffer->Draw(m_shader);
+            m_lightShader->setMatrix(m_lightShader->GetLocation("transform"), transform);
+            m_buffer->Draw(m_lightShader);
         }
+        //---------------------------------------
+        //Light---------------------------
+        m_sourceLightCubeShader->Use();
+        World::TransformComponent transformComp;
+        transformComp.Translate({ -1.2f, 1.0f, -3.0f });
+        transformComp.Scale({ .5f, .5f, .5f });
+        //transformComp.Rotate(20.f, { 1.2f, -3.0f, 2.0f });
+        auto projection = m_camera.GetProjection() * m_camera.GetView();
+        glm::mat4 transform = projection * transformComp.GetTransform();
+        m_sourceLightCubeShader->setMatrix(m_sourceLightCubeShader->GetLocation("transform"), transform);
+        m_ligtObjectBuffer->Draw(m_sourceLightCubeShader);
+        //---------------------------------------
 
         m_screenBuffer->Unbind();
         glDisable(GL_DEPTH_TEST);

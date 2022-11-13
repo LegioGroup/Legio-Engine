@@ -32,7 +32,12 @@ namespace LG
     private:
         std::shared_ptr<Shader> m_shader;
         std::shared_ptr<Shader> m_screenShader;
+        std::shared_ptr<Shader> m_lightShader;
+        std::shared_ptr<Shader> m_sourceLightCubeShader;
+
         std::unique_ptr<Buffer> m_buffer;
+        std::unique_ptr<Buffer> m_ligtObjectBuffer;
+
         std::unique_ptr<FrameBuffer> m_screenBuffer;
         std::vector<std::shared_ptr<Texture>> m_textures;
 

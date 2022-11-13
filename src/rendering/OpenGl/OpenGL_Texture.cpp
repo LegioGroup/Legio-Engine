@@ -44,7 +44,7 @@ namespace LG
         return texture;
 
     }
-    
+
     void Texture::Bind() const
     {
         glActiveTexture(GL_TEXTURE0 + m_id);
