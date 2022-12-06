@@ -20,7 +20,7 @@ project "Legio"
 		"external/stb_image/**.h",
 		"external/stb_image/**.cpp",
 		"external/glm/glm/**.hpp",
-		"external/glm/glm/**.inl",
+		"external/glm/glm/**.inl"
 
 		-- "external/ImGuizmo/ImGuizmo.h",
 		-- "external/ImGuizmo/ImGuizmo.cpp"
@@ -37,6 +37,7 @@ project "Legio"
 		"include",
         "src",
 		"external/spdlog/include",
+        "external/assimp/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
@@ -50,6 +51,7 @@ project "Legio"
 		"GLFW",
 		"Glad",
 		"ImGui",
+        "assimp",
 		-- "yaml-cpp",
 		"opengl32.lib"
 	}
