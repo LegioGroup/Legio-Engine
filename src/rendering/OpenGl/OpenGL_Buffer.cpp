@@ -1,22 +1,13 @@
 #include "rendering/OpenGL/OpenGL_Buffer.h"
-#include <rendering/OpenGL/OpenGL_Shader.h>
+#include "rendering/OpenGL/OpenGL_Shader.h"
 
 namespace LG
 {
-
-
     Buffer::Buffer(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
         : m_vertices(vertices)
     {
         Init(indices);
     }
-
-    Buffer::Buffer(const Primitive& shape)
-        : m_vertices(shape.GetVertices())
-    {
-        Init(shape.GetIndices());
-    }
-
 
     void Buffer::Init(const std::vector<uint32_t>& indices)
     {

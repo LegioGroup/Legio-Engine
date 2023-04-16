@@ -52,7 +52,6 @@ namespace LG
         glDetachShader(m_programID, fragmentID);
 
         m_posLoc = glGetAttribLocation(m_programID, "vpos");
-        m_colorLoc = glGetAttribLocation(m_programID, "vcolor");
         m_texCoordLoc = glGetAttribLocation(m_programID, "vtex");
         m_normalCoords = glGetAttribLocation(m_programID, "vnormal");
 
@@ -74,9 +73,6 @@ namespace LG
     {
         glEnableVertexAttribArray(m_posLoc);
         glVertexAttribPointer(m_posLoc, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_vertexPosition)));
-
-        glEnableVertexAttribArray(m_colorLoc);
-        glVertexAttribPointer(m_colorLoc, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_vertexColor)));
 
         glEnableVertexAttribArray(m_texCoordLoc);
         glVertexAttribPointer(m_texCoordLoc, 2, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_texCoords)));

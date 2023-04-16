@@ -12,6 +12,7 @@
 #include <rendering/OpenGL/OpenGL_Buffer.h>
 #include <rendering/OpenGL/OpenGL_FrameBuffer.h>
 #include <rendering/OpenGL/OpenGL_Texture.h>
+#include <rendering/OpenGl/OpenGL_Model.h>
 
 namespace LG
 {
@@ -32,15 +33,10 @@ namespace LG
     private:
         std::shared_ptr<Shader> m_shader;
         std::shared_ptr<Shader> m_screenShader;
-        std::shared_ptr<Shader> m_lightShader;
-        std::shared_ptr<Shader> m_sourceLightCubeShader;
 
-        std::unique_ptr<Buffer> m_buffer;
-        std::unique_ptr<Buffer> m_ligtObjectBuffer;
+        std::unique_ptr<Model> m_model;
 
         std::unique_ptr<FrameBuffer> m_screenBuffer;
-        std::vector<std::shared_ptr<Texture>> m_textures;
-
         //Temp
         LGCamera m_camera;
 
