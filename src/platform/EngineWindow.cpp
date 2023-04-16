@@ -51,7 +51,7 @@ namespace LG
         glfwSetWindowUserPointer(m_window, &m_data);
         glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
         {
-            auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
             data.m_width = width;
             data.m_height = height;
 
@@ -71,7 +71,7 @@ namespace LG
 
         glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
-            auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
             switch (action)
             {
                 case GLFW_PRESS:
@@ -97,14 +97,14 @@ namespace LG
 
         glfwSetCharCallback(m_window, [](GLFWwindow* window, unsigned int keycode)
         {
-            auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
             KeyTypedEvent event(keycode);
             data.m_eventCallbackFn(event);
         });
 
         glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods)
         {
-            auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
             switch (action)
             {
             case GLFW_PRESS:
@@ -124,14 +124,14 @@ namespace LG
 
         glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xOffset, double yOffset)
         {
-            auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
             MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
             data.m_eventCallbackFn(event);
         });
 
         glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double x, double y)
         {
-            auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+            const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
             MouseMovedEvent event(static_cast<float>(x), static_cast<float>(y));
             data.m_eventCallbackFn(event);
         });

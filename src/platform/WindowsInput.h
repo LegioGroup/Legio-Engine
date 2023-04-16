@@ -7,6 +7,8 @@ namespace LG
     {
     public:
         WindowsInput() = default;
+        virtual ~WindowsInput() = default;
+
         virtual void Init() override {}
         virtual bool IsKeyPressed(int keyCode) override;
         virtual bool IsMouseButtonPressed(int button) override;

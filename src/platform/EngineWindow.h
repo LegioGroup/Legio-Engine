@@ -10,7 +10,7 @@ namespace LG
     class EngineWindow : public Window
     {
     public:
-        EngineWindow(WindowProps windowSettings = WindowProps());
+        explicit EngineWindow(WindowProps windowSettings = WindowProps());
         virtual ~EngineWindow();
         void Init() override;
         bool Update() override;

@@ -10,14 +10,14 @@
 namespace LG
 {
     Shader::Shader(std::string&& vertexLocation, std::string&& fragmentLocation)
-        : m_vertex(ReadString(vertexLocation))
-        , m_fragment(ReadString(fragmentLocation))
+        : m_vertex(ReadString(std::move(vertexLocation)))
+        , m_fragment(ReadString(std::move(fragmentLocation)))
     {
         //Shader Program
         unsigned int vertexID = glCreateShader(GL_VERTEX_SHADER);
 
         const char* vertexSource = m_vertex.c_str();
-        glShaderSource(vertexID, 1, &vertexSource, NULL);
+        glShaderSource(vertexID, 1, &vertexSource, nullptr);
         glCompileShader(vertexID);
 
         int  success;
@@ -26,14 +26,14 @@ namespace LG
 
         if (!success)
         {
-            glGetShaderInfoLog(vertexID, 512, NULL, infoLog);
+            glGetShaderInfoLog(vertexID, 512, nullptr, infoLog);
             LG_CORE_ERROR("SHADER::VERTEX::COMPILATION_FAILED\n");
             LG_CORE_WARN(infoLog);
         }
 
         unsigned int fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
         const char* fragmentSource = m_fragment.c_str();
-        glShaderSource(fragmentID, 1, &fragmentSource, NULL);
+        glShaderSource(fragmentID, 1, &fragmentSource, nullptr);
         glCompileShader(fragmentID);
 
         m_programID = glCreateProgram();
@@ -44,7 +44,7 @@ namespace LG
 
         glGetProgramiv(m_programID, GL_LINK_STATUS, &success);
         if (!success) {
-            glGetProgramInfoLog(m_programID, 512, NULL, infoLog);
+            glGetProgramInfoLog(m_programID, 512, nullptr, infoLog);
             LG_CORE_ERROR("SHADER::FRAGMENT::COMPILATION_FAILED\n");
             LG_CORE_WARN(infoLog);
         }
@@ -64,12 +64,12 @@ namespace LG
         glDeleteProgram(m_programID);
     }
 
-    void Shader::Use()
+    void Shader::Use() const
     {
         glUseProgram(m_programID);
     }
 
-    void Shader::SetupAttribs()
+    void Shader::SetupAttribs() const
     {
         glEnableVertexAttribArray(m_posLoc);
         glVertexAttribPointer(m_posLoc, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<const void*>(offsetof(Vertex, m_vertexPosition)));
@@ -112,37 +112,37 @@ namespace LG
         setMatrix(GetLocation(loc), matrix);
     }
 
-    void Shader::setInt(uint16_t loc, int val)
+    void Shader::setInt(uint16_t loc, int val) const
     {
         glUniform1i(loc, val);
     }
 
-    void Shader::setFloat(uint16_t loc, float val)
+    void Shader::setFloat(uint16_t loc, float val) const
     {
         glUniform1f(loc, val);
     }
 
-    void Shader::setVec2(uint16_t loc, const glm::vec2& vec)
+    void Shader::setVec2(uint16_t loc, const glm::vec2& vec) const
     {
         glUniform2f(loc, vec.x, vec.y);
     }
 
-    void Shader::setVec3(uint16_t loc, const glm::vec3& vec)
+    void Shader::setVec3(uint16_t loc, const glm::vec3& vec) const
     {
         glUniform3f(loc, vec.x, vec.y, vec.z);
     }
 
-    void Shader::setVec4(uint16_t loc, const glm::vec4& vec)
+    void Shader::setVec4(uint16_t loc, const glm::vec4& vec) const
     {
         glUniform4f(loc, vec.x, vec.y, vec.z, vec.w);
     }
 
-    void Shader::setMatrix(uint16_t loc, const glm::mat4& matrix)
+    void Shader::setMatrix(uint16_t loc, const glm::mat4& matrix) const
     {
         glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
     }
 
-    std::string Shader::ReadString(const std::string& filename)
+    std::string Shader::ReadString(std::string filename)
     {
         std::ifstream istream(filename.c_str(), std::ios_base::binary);
         std::stringstream sstream;

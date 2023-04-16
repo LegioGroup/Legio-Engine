@@ -7,6 +7,7 @@ namespace LG
     {
     public:
         Editor() = default;
+        ~Editor();
         void Init();
         void Shutdown();
 
