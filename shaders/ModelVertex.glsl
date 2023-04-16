@@ -4,9 +4,8 @@ layout (location = 1) in vec2 vtex;
 layout (location = 2) in vec3 vnormal;
 
 out vec3 FragPos;
-out vec2 TexCoords;
 out vec3 Normal;
-
+out vec2 TexCoords;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -15,8 +14,9 @@ uniform mat4 projection;
 void main()
 {
     FragPos = vec3(model * vec4(vpos, 1.0));
+
     //TODO: Costly operation, move it over to the CPU whenever possible and pass it as an uniform    
-    //Normal = mat3(transpose(inverse(model))) * vnormal;
+    Normal = mat3(transpose(inverse(model))) * vnormal;
+    gl_Position = projection * view * vec4(FragPos, 1.0);
     TexCoords = vtex;
-    gl_Position = projection * view * vec4(vpos, 1.0);
 }
