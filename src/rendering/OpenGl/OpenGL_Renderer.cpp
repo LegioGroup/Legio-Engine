@@ -21,6 +21,7 @@ namespace LG
     glm::vec3(40.0f,   1.0f,  -20.0f),
     glm::vec3(45.0f,  1.0f,  -20.0f),
     };
+
     void OpenGLRenderer::Init()
     {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -54,18 +55,24 @@ namespace LG
         m_screenBuffer->Bind();
         glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         for (unsigned int i = 0; i < 10; i++)
         {
             World::TransformComponent transformComp;
             transformComp.Translate(cubePositions[i]);
-            transformComp.Rotate(20.f * i, { -1.0f, -0.3f, -0.5f });
+            transformComp.Rotate(20.f * i, { -1.0f, 0.3f, 0.5f });
             transformComp.Rotate(180.0f, { 1.0f, 0.0f, 0.0f });
             transformComp.Rotate(180.0f, { 0.0f, 1.0f, 0.0f });
+
+            m_shader->setVec3("viewPos", m_camera.GeTransform().GetPositon());
+            m_shader->setMatrix("model", transformComp.GetTransform());
+            m_shader->setMatrix("view", m_camera.GetView());
+            m_shader->setMatrix("projection", m_camera.GetProjection());
+
             m_model->Draw(*m_shader);
         }
-        
         m_screenBuffer->Unbind();
         glDisable(GL_DEPTH_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
@@ -73,6 +80,7 @@ namespace LG
 
         m_screenShader->Use();
         m_shader->Use();
+
     }
 
     void OpenGLRenderer::RendererWaitIdle()
