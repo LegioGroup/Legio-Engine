@@ -9,6 +9,18 @@
 
 namespace LG
 {
+    glm::vec3 cubePositions[10] = {
+    glm::vec3(0.0f,   1.0f,  -20.0f),
+    glm::vec3(5.0f,   1.0f,  -20.0f),
+    glm::vec3(10.0f,   1.0f,  -20.0f),
+    glm::vec3(15.0f,   1.0f,  -20.0f),
+    glm::vec3(20.0f,   1.0f,  -20.0f),
+    glm::vec3(25.0f,   1.0f,  -20.0f),
+    glm::vec3(30.0f,   1.0f,  -20.0f),
+    glm::vec3(35.0f,   1.0f,  -20.0f),
+    glm::vec3(40.0f,   1.0f,  -20.0f),
+    glm::vec3(45.0f,  1.0f,  -20.0f),
+    };
     void OpenGLRenderer::Init()
     {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -29,7 +41,6 @@ namespace LG
         m_screenShader->setInt("screenTexture", 2); //TODO: Improve texture Class
 
         m_screenBuffer = std::make_unique<FrameBuffer>(LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight());
-
     }
     
     void OpenGLRenderer::Shutdown()
@@ -40,28 +51,28 @@ namespace LG
     {
         // Render
         // Clear the colorbuffer
-        m_shader->Use();
         m_screenBuffer->Bind();
         glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        World::TransformComponent transformComp;
-        transformComp.Translate(glm::vec3(-0.0f, 0.0f, -2000000.0f));
-        transformComp.Rotate(180.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            World::TransformComponent transformComp;
+            transformComp.Translate(cubePositions[i]);
+            transformComp.Rotate(20.f * i, { -1.0f, -0.3f, -0.5f });
+            transformComp.Rotate(180.0f, { 1.0f, 0.0f, 0.0f });
+            transformComp.Rotate(180.0f, { 0.0f, 1.0f, 0.0f });
+            m_model->Draw(*m_shader);
+        }
         
-        m_shader->setMatrix("model", transformComp.GetTransform());
-        m_shader->setMatrix("view", m_camera.GetView());
-        m_shader->setMatrix("projection", m_camera.GetProjection());
-        m_model->Draw(*m_shader);
-
         m_screenBuffer->Unbind();
         glDisable(GL_DEPTH_TEST);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessary actually, since we won't be able to see behind the quad anyways)
         glClear(GL_COLOR_BUFFER_BIT);
 
         m_screenShader->Use();
+        m_shader->Use();
     }
 
     void OpenGLRenderer::RendererWaitIdle()
