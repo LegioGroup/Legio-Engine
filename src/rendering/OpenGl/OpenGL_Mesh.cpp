@@ -5,7 +5,7 @@
 
 namespace LG
 {
-    Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<std::shared_ptr<Texture>> textures)
+    Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<std::shared_ptr<Texture>>& textures)
         : m_vertices(vertices)
         , m_indices(indices)
         , m_textures(textures)
@@ -13,7 +13,7 @@ namespace LG
         Setup();
     }
 
-    void Mesh::Draw(Shader& shader)
+    void Mesh::Draw(Shader& shader) const
     {
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
@@ -41,7 +41,7 @@ namespace LG
 
         // draw mesh
         glBindVertexArray(m_VAO);
-        glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
         glBindVertexArray(0);
         glActiveTexture(GL_TEXTURE0);
 
@@ -64,7 +64,7 @@ namespace LG
 
         // vertex positions
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)nullptr);
         // vertex texture coords
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_texCoords));

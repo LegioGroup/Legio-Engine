@@ -6,7 +6,7 @@
 
 #include <glad/glad.h>
 #include <optional>
-#include <memory.h>
+#include <memory>
 #include <rendering/OpenGL/OpenGL_Shader.h>
 //TODO: Unify buffers
 #include <rendering/OpenGL/OpenGL_Buffer.h>
@@ -19,17 +19,18 @@ namespace LG
     class OpenGLRenderer : public Renderer
     {
     public:
-        virtual void Init() override;
-        virtual void Shutdown() override;
-        virtual void RenderFrame() override;
-        virtual void RendererWaitIdle() override;
-        virtual void OnEvent(Event& event) override;
-        virtual unsigned int GetRenderTexture() const override{ return m_screenBuffer->GetFrameTexture(); };
-        virtual FrameBuffer* GetViewportScreenBuffer() override { return m_screenBuffer.get(); }
+        void Init() override;
+        void Shutdown() override;
+        void RenderFrame() override;
+        void RendererWaitIdle() override;
+        void OnEvent(Event& event) override;
+        unsigned int GetRenderTexture() const override{ return m_screenBuffer->GetFrameTexture(); };
+        FrameBuffer* GetViewportScreenBuffer() override { return m_screenBuffer.get(); }
     private:
         bool OnAppTickEvent(AppTickEvent& event);
         bool OnMouseMovedEvent(MouseMovedEvent& event);
         bool OnMouseScrolledEvent(MouseScrolledEvent& event);
+
     private:
         std::shared_ptr<Shader> m_shader;
         std::shared_ptr<Shader> m_screenShader;

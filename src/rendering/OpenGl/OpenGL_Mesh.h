@@ -10,13 +10,12 @@ namespace LG
     {
 
     public:
-        Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<std::shared_ptr<Texture>> textures);
-        void Draw(Shader& shader);
-    public:
+        Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<std::shared_ptr<Texture>>& textures);
+        void Draw(Shader& shader) const;
+    private:
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;
         std::vector<std::shared_ptr<Texture>> m_textures;
-    private:
 
         unsigned int m_EBO;
         unsigned int m_VAO;

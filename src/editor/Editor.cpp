@@ -27,6 +27,12 @@ namespace LG
     const ImVec4 k_color_interactive_hovered = ImVec4(0.450f, 0.450f, 0.450f, 1.000f);
     const ImVec4 k_color_check = ImVec4(26.0f / 255.0f, 140.0f / 255.0f, 192.0f / 255.0f, 1.0f);
 
+    Editor::~Editor()
+    {
+        LG_CORE_INFO("Shutting down Editor.");
+        m_widgets.clear();
+    }
+
     void Editor::Init()
     {
         // Setup Dear ImGui context
@@ -55,7 +61,7 @@ namespace LG
 
         m_createChildWidgets_Fn = [this]() 
         {
-            for(auto& widget : m_widgets)
+            for(const auto& widget : m_widgets)
             {
                 widget->Render();
             }
@@ -258,7 +264,7 @@ namespace LG
             ImGui::PopStyleVar(2);
 
         // Submit the DockSpace
-        ImGuiIO& io = ImGui::GetIO();
+        const ImGuiIO& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
             ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
@@ -291,8 +297,6 @@ namespace LG
                 if (ImGui::MenuItem("Flag: PassthruCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
                 ImGui::Separator();
 
-                //if (ImGui::MenuItem("Close", NULL, false, nullptr != NULL))
-                //    *p_open = false;
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();

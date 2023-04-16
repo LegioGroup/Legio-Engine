@@ -5,8 +5,10 @@ namespace LG
 {
     void Model::Draw(Shader& shader)
     {
-        for (unsigned int i = 0; i < m_meshes.size(); i++)
-            m_meshes[i].Draw(shader);
+        for (const auto& mesh : m_meshes)
+        {
+            mesh.Draw(shader);
+        }
     }
     void Model::LoadModel(std::string path)
     {
@@ -22,14 +24,14 @@ namespace LG
 
         ProcessNode(scene->mRootNode, scene);
     }
-    void Model::ProcessNode(aiNode* node, const aiScene* scene)
+    void Model::ProcessNode(const aiNode* node, const aiScene* scene)
     {
         // process each mesh located at the current node
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
             // the node object only contains indices to index the actual objects in the scene. 
             // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
-            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
             m_meshes.push_back(ProcessMesh(mesh, scene));
         }
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
@@ -38,7 +40,7 @@ namespace LG
             ProcessNode(node->mChildren[i], scene);
         }
     }
-    Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+    Mesh Model::ProcessMesh(const aiMesh* mesh, const aiScene* scene)
     {
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
@@ -89,7 +91,7 @@ namespace LG
             else
                 texCoords = glm::vec2(0.0f, 0.0f);
 
-            Vertex vertex = Vertex(position, texCoords, normals, tangents, biTangents);
+            auto vertex = Vertex(position, texCoords, normals, tangents, biTangents);
             vertices.push_back(vertex);
         }
         
@@ -102,7 +104,7 @@ namespace LG
                 indices.push_back(face.mIndices[j]);
         }
         // process materials
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         // we assume a convention for sampler names in the shaders. Each diffuse texture should be named
         // as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
         // Same applies to other texture as the following list summarizes:
@@ -126,7 +128,7 @@ namespace LG
         // return a mesh object created from the extracted mesh data
         return Mesh(vertices, indices, textures);
     }
-    std::vector<std::shared_ptr<Texture>> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+    std::vector<std::shared_ptr<Texture>> Model::LoadMaterialTextures(const aiMaterial* mat, aiTextureType type, std::string typeName)
     {
         std::vector<std::shared_ptr<Texture>> textures;
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)

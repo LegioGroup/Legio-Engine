@@ -21,6 +21,7 @@ namespace LG
         using EventCallbackFn = std::function<void(Event&)>;
 
         Window(WindowProps windowSettings = WindowProps()) {};
+        virtual ~Window() = default;
         virtual void Init() = 0;
         virtual bool Update() = 0;
         virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
