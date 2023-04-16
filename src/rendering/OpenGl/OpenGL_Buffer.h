@@ -4,7 +4,6 @@
 #include <vector>
 #include <memory>
 #include <glad/glad.h>
-#include <Legio/rendering/Primitives.h>
 
 namespace LG 
 {
@@ -13,7 +12,6 @@ namespace LG
     {
     public:
         Buffer(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices);
-        Buffer(const Primitive& shape);
         ~Buffer();
         void Draw(std::shared_ptr<Shader> shader);
 

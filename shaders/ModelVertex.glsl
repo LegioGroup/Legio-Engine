@@ -16,7 +16,7 @@ void main()
 {
     FragPos = vec3(model * vec4(vpos, 1.0));
     //TODO: Costly operation, move it over to the CPU whenever possible and pass it as an uniform    
-    Normal = mat3(transpose(inverse(model))) * vnormal;
+    //Normal = mat3(transpose(inverse(model))) * vnormal;
     TexCoords = vtex;
     gl_Position = projection * view * vec4(vpos, 1.0);
 }

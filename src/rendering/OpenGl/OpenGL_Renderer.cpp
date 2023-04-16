@@ -9,14 +9,6 @@
 
 namespace LG
 {
-
-    static Pyramid          pyramid;
-    static Cube             cube;
-    static Quad             quad;
-    static Triangle         triangle;
-    static CubeNoIndices    cubeNoIndices;
-
-
     glm::vec3 cubePositions[10] = {
         glm::vec3(0.0f,   1.0f,  0.0f),
         glm::vec3(2.0f,   6.0f, -15.0f),
@@ -52,84 +44,6 @@ namespace LG
         
         m_shader = std::make_shared<Shader>("external/engine/shaders/modelVertex.glsl", "external/engine/shaders/modelFragment.glsl");
         m_screenShader = std::make_shared<Shader>("external/engine/shaders/screenVertex.glsl", "external/engine/shaders/screenFragment.glsl");
-        m_sourceLightCubeShader = std::make_shared<Shader>("external/engine/shaders/sourceLightCubeVertex.glsl", "external/engine/shaders/sourceLightCubeFragment.glsl");
-        m_lightShader = std::make_shared<Shader>("external/engine/shaders/multipleLightsVertex.glsl", "external/engine/shaders/multipleLightsFragment.glsl");
-
-
-        m_buffer = std::make_unique<Buffer>(cubeNoIndices);
-        m_textures.emplace_back(Texture::Load("external/engine/models/textures/front.png"));
-        m_textures.emplace_back(Texture::Load("external/engine/models/textures/awesomeface.png"));
-        m_textures.emplace_back(Texture::Load("external/engine/models/textures/container2.png"));
-        m_textures.emplace_back(Texture::Load("external/engine/models/textures/container2_specular.png"));
-        m_textures.emplace_back(Texture::Load("external/engine/models/textures/matrix.jpg"));
-
-        m_ligtObjectBuffer = std::make_unique<Buffer>(pyramid);
-
-        m_shader->Use();
-        m_shader->setInt("fTexture1", m_textures[0]->GetID());
-        m_shader->setInt("fTexture2", m_textures[1]->GetID());
-
-        m_lightShader->Use();
-        m_lightShader->setInt("material.diffuse", m_textures[2]->GetID());
-        m_lightShader->setInt("material.specular", m_textures[3]->GetID());
-
-        //Directional Light
-        m_lightShader->setVec3("dirLight.direction", { -0.2f, -1.0f, -0.3f });
-        m_lightShader->setVec3("dirLight.ambient", {0.05f, 0.05f, 0.05f});
-        m_lightShader->setVec3("dirLight.diffuse", {0.4f, 0.4f, 0.4f});
-        m_lightShader->setVec3("dirLight.specular", {0.5f, 0.5f, 0.5f});
-
-        // point light 1
-        m_lightShader->setVec3("pointLights[0].position", pointLightPositions[0]);
-        m_lightShader->setVec3("pointLights[0].ambient", { 0.05f, 0.05f, 0.05f });
-        m_lightShader->setVec3("pointLights[0].diffuse", {0.8f, 0.8f, 0.8f});
-        m_lightShader->setVec3("pointLights[0].specular", { 1.0f, 1.0f, 1.0f });
-        m_lightShader->setFloat("pointLights[0].constant", 1.0f);
-        m_lightShader->setFloat("pointLights[0].linear", 0.09f);
-        m_lightShader->setFloat("pointLights[0].quadratic", 0.032f);
-        // point light 2
-        m_lightShader->setVec3("pointLights[1].position", pointLightPositions[1]);
-        m_lightShader->setVec3("pointLights[1].ambient", { 0.05f, 0.05f, 0.05f });
-        m_lightShader->setVec3("pointLights[1].diffuse", {0.8f, 0.8f, 0.8f});
-        m_lightShader->setVec3("pointLights[1].specular", { 1.0f, 1.0f, 1.0f });
-        m_lightShader->setFloat("pointLights[1].constant", 1.0f);
-        m_lightShader->setFloat("pointLights[1].linear", 0.09f);
-        m_lightShader->setFloat("pointLights[1].quadratic", 0.032f);
-        // point light 3
-        m_lightShader->setVec3("pointLights[2].position", pointLightPositions[2]);
-        m_lightShader->setVec3("pointLights[2].ambient", { 0.05f, 0.05f, 0.05f });
-        m_lightShader->setVec3("pointLights[2].diffuse", { 0.8f, 0.8f, 0.8f });
-        m_lightShader->setVec3("pointLights[2].specular", {1.0f, 1.0f, 1.0f});
-        m_lightShader->setFloat("pointLights[2].constant", 1.0f);
-        m_lightShader->setFloat("pointLights[2].linear", 0.09f);
-        m_lightShader->setFloat("pointLights[2].quadratic", 0.032f);
-        // point light 4
-        m_lightShader->setVec3("pointLights[3].position", pointLightPositions[3]);
-        m_lightShader->setVec3("pointLights[3].ambient", { 0.05f, 0.05f, 0.05f });
-        m_lightShader->setVec3("pointLights[3].diffuse", {0.8f, 0.8f, 0.8f});
-        m_lightShader->setVec3("pointLights[3].specular", { 1.0f, 1.0f, 1.0f });
-        m_lightShader->setFloat("pointLights[3].constant", 1.0f);
-        m_lightShader->setFloat("pointLights[3].linear", 0.09f);
-        m_lightShader->setFloat("pointLights[3].quadratic", 0.032f);
-
-        // spotLight
-        m_lightShader->setVec3("spotLight.position", {});
-        m_lightShader->setVec3("spotLight.direction", {});
-        m_lightShader->setVec3("spotLight.ambient", { 0.0f, 0.0f, 0.0f });
-        m_lightShader->setVec3("spotLight.diffuse", { 1.0f, 1.0f, 1.0f });
-        m_lightShader->setVec3("spotLight.specular", { 1.0f, 1.0f, 1.0f });
-        m_lightShader->setFloat("spotLight.constant", 1.0f);
-        m_lightShader->setFloat("spotLight.linear", 0.09f);
-        m_lightShader->setFloat("spotLight.quadratic", 0.032f);
-        m_lightShader->setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-        m_lightShader->setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
-
-        //m_lightShader->setInt("material.emission", m_textures[4]->GetID());
-        m_lightShader->setVec3("light.ambient", { 0.2f, 0.2f, 0.2f });
-        m_lightShader->setVec3("light.diffuse", {0.5f, 0.5f, 0.5f}); // darken diffuse light a bit
-        m_lightShader->setVec3("light.specular", { 1.0f, 1.0f, 1.0f });
-
-        m_sourceLightCubeShader->Use();
 
         m_screenShader->Use();
         m_screenShader->setInt("screenTexture", 2); //TODO: Improve texture Class
@@ -146,68 +60,21 @@ namespace LG
     {
         // Render
         // Clear the colorbuffer
-
+        m_shader->Use();
         m_screenBuffer->Bind();
         glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for(const auto& texture : m_textures)
-        {
-            texture->Bind();
-        }
-
-        //Objects---------------------------Draw 10 cubes
-        for (unsigned int i = 0; i < 3; i++)
-        {
-            World::TransformComponent transformComp;
-            transformComp.Translate(cubePositions[i]);
-            //transformComp.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
-            //transformComp.Scale({ 0.2f, 0.2f, 0.2f });
-
-            //glm::vec3 lightColor;
-            //lightColor.x = sin(glfwGetTime() * 2.0f);
-            //lightColor.y = sin(glfwGetTime() * 0.7f);
-            //lightColor.z = sin(glfwGetTime() * 1.3f);
-
-            //glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-            //glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
-
-            //m_lightShader->setVec3("light.ambient", ambientColor);
-            //m_lightShader->setVec3("light.diffuse", diffuseColor);
-
-            //m_lightShader->setVec3("spotLight.position", m_camera.GeTransform().GetPositon());
-            //m_lightShader->setVec3("spotLight.direction", m_camera.GetCameraFront());
-            //m_lightShader->setVec3("viewPos", m_camera.GeTransform().GetPositon());
-            m_shader->setMatrix("model", transformComp.GetTransform());
-            m_shader->setMatrix("view", m_camera.GetView());
-            m_shader->setMatrix("projection", m_camera.GetProjection());
-            //m_lightShader->setVec3("material.ambient", { 1.0f, 0.5f, 0.31f });
-            //m_lightShader->setVec3("material.diffuse", {1.0f, 0.5f, 0.31f});
-            //m_lightShader->setVec3("material.specular", { 0.5f, 0.5f, 0.5f });
-            //m_lightShader->setFloat("material.shininess", 64.0f);
-            //m_lightShader->setMatrix("model", transformComp.GetTransform());
-            //m_lightShader->setMatrix("view", m_camera.GetView());
-            //m_lightShader->setMatrix("projection", m_camera.GetProjection());
-            m_model->Draw(*m_shader);
-        }
-        //---------------------------------------
-        //Light---------------------------
-        for (size_t i = 0; i < 4; i++)
-        {
-            m_sourceLightCubeShader->Use();
-            //transformComp.Rotate(20.f, { 1.2f, -3.0f, 2.0f });
-            World::TransformComponent transformComponent;
-            transformComponent.Translate(pointLightPositions[i]);
-            transformComponent.Scale({ .25f,.25f,.25f });
-            auto projection = m_camera.GetProjection() * m_camera.GetView();
-            glm::mat4 transform = projection * transformComponent.GetTransform();
-            m_sourceLightCubeShader->setMatrix("transform", transform);
-            m_ligtObjectBuffer->Draw(m_sourceLightCubeShader);
-        }
-
-        //---------------------------------------
+        World::TransformComponent transformComp;
+        transformComp.Translate(glm::vec3(-0.0f, 0.0f, -2000000.0f));
+        transformComp.Rotate(180.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+        
+        m_shader->setMatrix("model", transformComp.GetTransform());
+        m_shader->setMatrix("view", m_camera.GetView());
+        m_shader->setMatrix("projection", m_camera.GetProjection());
+        m_model->Draw(*m_shader);
 
         m_screenBuffer->Unbind();
         glDisable(GL_DEPTH_TEST);

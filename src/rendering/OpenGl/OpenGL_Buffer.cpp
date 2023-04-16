@@ -9,13 +9,6 @@ namespace LG
         Init(indices);
     }
 
-    Buffer::Buffer(const Primitive& shape)
-        : m_vertices(shape.GetVertices())
-    {
-        Init(shape.GetIndices());
-    }
-
-
     void Buffer::Init(const std::vector<uint32_t>& indices)
     {
         glGenVertexArrays(1, &m_VAO);

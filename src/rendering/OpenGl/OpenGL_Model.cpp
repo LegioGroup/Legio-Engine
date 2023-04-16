@@ -89,7 +89,7 @@ namespace LG
             else
                 texCoords = glm::vec2(0.0f, 0.0f);
 
-            Vertex vertex = Vertex(position, {}, texCoords, normals, tangents, biTangents);
+            Vertex vertex = Vertex(position, texCoords, normals, tangents, biTangents);
             vertices.push_back(vertex);
         }
         
