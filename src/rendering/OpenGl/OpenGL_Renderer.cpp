@@ -21,7 +21,6 @@ namespace LG
     glm::vec3(40.0f,   1.0f,  -20.0f),
     glm::vec3(45.0f,  1.0f,  -20.0f),
     };
-
     void OpenGLRenderer::Init()
     {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
