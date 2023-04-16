@@ -1,10 +1,8 @@
 #include "rendering/OpenGL/OpenGL_Buffer.h"
-#include <rendering/OpenGL/OpenGL_Shader.h>
+#include "rendering/OpenGL/OpenGL_Shader.h"
 
 namespace LG
 {
-
-
     Buffer::Buffer(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
         : m_vertices(vertices)
     {

@@ -5,6 +5,7 @@
 #include "platform/WindowsInput.h"
 
 #include "rendering/OpenGL/OpenGL_Renderer.h"
+#include "rendering/OpenGl/OpenGL_Model.h"
 
 namespace LG
 {
@@ -43,11 +44,13 @@ namespace LG
             LG_CORE_ERROR("Failed to initialize OpenGL context");
         }
 
+        m_model = std::make_unique<Model>("external/engine/models/backpack/backpack.obj");
+
         glViewport(0, 0, LG::ServiceLocator::GetWindow()->GetWidth(), LG::ServiceLocator::GetWindow()->GetHeight());
         m_camera.SetViewTarget(glm::vec3(1.f, -7.f, -7.f), glm::vec3(0.f, 3.f, 0.0f));
         m_camera.SetPerspectiveProjection(glm::radians(45.f), LG::ServiceLocator::GetWindow()->GetWidth() / LG::ServiceLocator::GetWindow()->GetHeight(), 0.1f, 10000.f);
         
-        m_shader = std::make_shared<Shader>("external/engine/shaders/vertex.glsl", "external/engine/shaders/fragment.glsl");
+        m_shader = std::make_shared<Shader>("external/engine/shaders/modelVertex.glsl", "external/engine/shaders/modelFragment.glsl");
         m_screenShader = std::make_shared<Shader>("external/engine/shaders/screenVertex.glsl", "external/engine/shaders/screenFragment.glsl");
         m_sourceLightCubeShader = std::make_shared<Shader>("external/engine/shaders/sourceLightCubeVertex.glsl", "external/engine/shaders/sourceLightCubeFragment.glsl");
         m_lightShader = std::make_shared<Shader>("external/engine/shaders/multipleLightsVertex.glsl", "external/engine/shaders/multipleLightsFragment.glsl");
@@ -156,11 +159,12 @@ namespace LG
         }
 
         //Objects---------------------------Draw 10 cubes
-        for (unsigned int i = 0; i < 10; i++)
+        for (unsigned int i = 0; i < 3; i++)
         {
             World::TransformComponent transformComp;
             transformComp.Translate(cubePositions[i]);
-            transformComp.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
+            //transformComp.Rotate(20.f * i, { 1.0f, 0.3f, 0.5f });
+            //transformComp.Scale({ 0.2f, 0.2f, 0.2f });
 
             //glm::vec3 lightColor;
             //lightColor.x = sin(glfwGetTime() * 2.0f);
@@ -173,18 +177,20 @@ namespace LG
             //m_lightShader->setVec3("light.ambient", ambientColor);
             //m_lightShader->setVec3("light.diffuse", diffuseColor);
 
-            m_lightShader->setVec3("spotLight.position", m_camera.GeTransform().GetPositon());
-            m_lightShader->setVec3("spotLight.direction", m_camera.GetCameraFront());
-            m_lightShader->setVec3("viewPos", m_camera.GeTransform().GetPositon());
-            m_lightShader->setMatrix("model", transformComp.GetTransform());
-            m_lightShader->setMatrix("view", m_camera.GetView());
-            m_lightShader->setMatrix("projection", m_camera.GetProjection());
-            m_lightShader->setVec3("material.ambient", { 1.0f, 0.5f, 0.31f });
-            m_lightShader->setVec3("material.diffuse", {1.0f, 0.5f, 0.31f});
-            m_lightShader->setVec3("material.specular", { 0.5f, 0.5f, 0.5f });
-            m_lightShader->setFloat("material.shininess", 64.0f);
-
-            m_buffer->Draw(m_lightShader);
+            //m_lightShader->setVec3("spotLight.position", m_camera.GeTransform().GetPositon());
+            //m_lightShader->setVec3("spotLight.direction", m_camera.GetCameraFront());
+            //m_lightShader->setVec3("viewPos", m_camera.GeTransform().GetPositon());
+            m_shader->setMatrix("model", transformComp.GetTransform());
+            m_shader->setMatrix("view", m_camera.GetView());
+            m_shader->setMatrix("projection", m_camera.GetProjection());
+            //m_lightShader->setVec3("material.ambient", { 1.0f, 0.5f, 0.31f });
+            //m_lightShader->setVec3("material.diffuse", {1.0f, 0.5f, 0.31f});
+            //m_lightShader->setVec3("material.specular", { 0.5f, 0.5f, 0.5f });
+            //m_lightShader->setFloat("material.shininess", 64.0f);
+            //m_lightShader->setMatrix("model", transformComp.GetTransform());
+            //m_lightShader->setMatrix("view", m_camera.GetView());
+            //m_lightShader->setMatrix("projection", m_camera.GetProjection());
+            m_model->Draw(*m_shader);
         }
         //---------------------------------------
         //Light---------------------------

@@ -16,14 +16,25 @@ namespace LG
     std::shared_ptr<Texture> Texture::Load(const char* filename)
     {
         std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+        texture->m_path = filename;
 
+        int nrComponents;
         stbi_set_flip_vertically_on_load(true);
-        unsigned char* image = stbi_load(filename, &texture->m_size.x, &texture->m_size.y, nullptr, 4);
+
+        unsigned char* image = stbi_load(filename, &texture->m_size.x, &texture->m_size.y, &nrComponents, 0);
         if (!image) 
         {
             LG_CORE_ERROR("Texture::Load - Cannot load file {0}", filename);
             return texture;
         }
+
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
 
         glGenTextures(1, &texture->m_id);
         glBindTexture(GL_TEXTURE_2D, texture->m_id);
@@ -35,7 +46,7 @@ namespace LG
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->m_size.x, texture->m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image); //Load imagen
+        glTexImage2D(GL_TEXTURE_2D, 0, format, texture->m_size.x, texture->m_size.y, 0, format, GL_UNSIGNED_BYTE, image); //Load imagen
 
         glGenerateMipmap(GL_TEXTURE_2D);
 

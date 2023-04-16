@@ -12,6 +12,7 @@
 #include <rendering/OpenGL/OpenGL_Buffer.h>
 #include <rendering/OpenGL/OpenGL_FrameBuffer.h>
 #include <rendering/OpenGL/OpenGL_Texture.h>
+#include <rendering/OpenGl/OpenGL_Model.h>
 
 namespace LG
 {
@@ -35,6 +36,7 @@ namespace LG
         std::shared_ptr<Shader> m_lightShader;
         std::shared_ptr<Shader> m_sourceLightCubeShader;
 
+        std::unique_ptr<Model> m_model;
         std::unique_ptr<Buffer> m_buffer;
         std::unique_ptr<Buffer> m_ligtObjectBuffer;
 
